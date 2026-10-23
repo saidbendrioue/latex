@@ -1,0 +1,396 @@
+% =============================================================================
+% Said Bendrioue — resume
+% Compile from this directory:
+%   xelatex -interaction=nonstopmode -halt-on-error resume.tex
+%
+% Required file (same directory): profile.jpg
+%   To use another photograph, change \photofile below.
+% Required fonts: fonts/Lato-Regular.ttf, Lato-Bold.ttf, Lato-Italic.ttf,
+%   Lato-BoldItalic.ttf (Lato, SIL Open Font License).
+% =============================================================================
+
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{xcolor}
+
+% -----------------------------------------------------------------------------
+% CUSTOMIZATION 1 — Accent color. One change recolors headings, name rule,
+% company names, and the photo ring.
+% -----------------------------------------------------------------------------
+\definecolor{accent}{HTML}{1F3A5F}
+
+\definecolor{ink}{HTML}{1C1C1C}
+\definecolor{muted}{HTML}{5E6772}
+\definecolor{rulegray}{HTML}{D5D8DE}
+
+% -----------------------------------------------------------------------------
+% CUSTOMIZATION 2 — Profile photo. Diameter, and the file name.
+% profile.jpg must sit in the same directory as this file.
+% -----------------------------------------------------------------------------
+\newlength{\photosize}
+\setlength{\photosize}{2.75cm}
+\newcommand{\photofile}{profile.jpg}
+
+% -----------------------------------------------------------------------------
+% CUSTOMIZATION 3 — Page margins and vertical rhythm.
+% -----------------------------------------------------------------------------
+\usepackage[
+  a4paper,
+  top=1.15cm,
+  bottom=1.15cm,
+  left=1.35cm,
+  right=1.35cm
+]{geometry}
+
+\newcommand{\sectionbefore}{8.5pt}
+\newcommand{\sectionafter}{3.5pt}
+\newcommand{\companybefore}{3pt}
+\newcommand{\rolebefore}{4.5pt}
+
+\usepackage{fontspec}
+% TeXOff keeps ASCII apostrophes and hyphens as typed. Lato has no U+2011
+% (non-breaking hyphen); those two source hyphens are set as a normal hyphen.
+\defaultfontfeatures{Ligatures={TeXOff,NoCommon}}
+\setmainfont{Lato}[
+  Path = ./fonts/,
+  Extension = .ttf,
+  UprightFont = *-Regular,
+  BoldFont = *-Bold,
+  ItalicFont = *-Italic,
+  BoldItalicFont = *-BoldItalic,
+  Ligatures = {TeXOff,NoCommon}
+]
+
+\usepackage[french]{babel}
+\frenchsetup{
+  AutoSpacePunctuation=false,
+  StandardLists=true
+}
+
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{needspace}
+\usepackage[
+  unicode,
+  hidelinks,
+  pdflang={fr},
+  pdftitle={Said Bendrioue — Développeur Fullstack Java/Angular | Scrum Master},
+  pdfauthor={Said Bendrioue}
+]{hyperref}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+\clubpenalty=8000
+\widowpenalty=8000
+\raggedbottom
+\raggedright
+\color{ink}
+
+\setlist[itemize]{
+  label=\textbullet,
+  leftmargin=1.15em,
+  labelsep=0.4em,
+  itemsep=1.15pt,
+  topsep=2pt,
+  parsep=0pt,
+  partopsep=0pt
+}
+
+\titleformat{\section}
+  {\large\bfseries\raggedright\color{accent}}
+  {}
+  {0pt}
+  {\MakeUppercase}
+  [\vspace{1pt}{\color{accent}\titlerule[0.55pt]}]
+\titlespacing*{\section}{0pt}{\sectionbefore}{\sectionafter}
+
+\newcommand{\sep}{%
+  \hspace{0.45em}{\color{rulegray}\textbar}\hspace{0.45em}%
+}
+
+\newcommand{\profilephoto}{%
+  \begin{tikzpicture}
+    \begin{scope}
+      \clip (0,0) circle[radius=0.5\photosize];
+      \node[anchor=center, inner sep=0pt] at (0,0)
+        {\includegraphics[width=\photosize,height=\photosize]{\photofile}};
+    \end{scope}
+    \draw[accent, line width=0.45pt] (0,0) circle[radius=0.5\photosize];
+  \end{tikzpicture}%
+}
+
+% Employer for the roles that follow. #2 is the LinkedIn tenure, or empty.
+% The tenure is printed once, on the first role of that employer.
+\newcommand{\employer}{}
+\newcommand{\tenuretext}{}
+\newif\ifshowtenure
+\newcommand{\company}[2]{%
+  \renewcommand{\employer}{#1}%
+  \renewcommand{\tenuretext}{#2}%
+  \showtenuretrue
+  \vspace{\companybefore}%
+}
+
+% Role. #1 title, #2 dates, #3 location.
+% The title wraps in the width left of the date, so a long title cannot
+% push the date onto the following line.
+\newlength{\datewidth}
+\newcommand{\role}[3]{%
+  \Needspace{6\baselineskip}%
+  \vspace{\rolebefore}%
+  \settowidth{\datewidth}{#2}%
+  \noindent
+  \begin{minipage}[t]{\dimexpr\textwidth-\datewidth-1.1em\relax}
+    \raggedright\textbf{#1}\strut
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{\datewidth}
+    \raggedleft\color{muted}#2\strut
+  \end{minipage}\par
+  \nopagebreak
+  \vspace{0.7pt}%
+  \noindent\textit{\color{accent}\employer}%
+  \ifshowtenure
+    \if\relax\detokenize\expandafter{\tenuretext}\relax\else
+      \textcolor{muted}{\ \textbar\ \textup{\tenuretext}}%
+    \fi
+    \global\showtenurefalse
+  \fi
+  \par\nopagebreak
+  {\small\color{muted}#3}\par
+  \vspace{0.4pt}%
+}
+
+% Prose from the source that is not a bullet.
+\newcommand{\statement}[1]{%
+  \par\vspace{1.4pt}\noindent #1\par
+}
+
+% In-role label already present in the source (Volet Technique, etc.).
+\newcommand{\track}[1]{%
+  \par\vspace{3.5pt}\noindent\textbf{#1}\par\vspace{0.4pt}%
+}
+
+% Dates stay in the same sentence as the school. A right-hand date column
+% was extracted by PDF readers as a separate block, after every degree.
+\newcommand{\education}[3]{%
+  \Needspace{3\baselineskip}%
+  \vspace{3.2pt}%
+  \noindent\textbf{#1}\hspace{0.5em}{\color{muted}#3}\par
+  \nopagebreak
+  \vspace{0.3pt}%
+  \noindent{\itshape #2}\par
+}
+
+\begin{document}
+
+% ----- Header: text first, then the decorative photograph ------------------
+\noindent
+\begin{minipage}[c]{\dimexpr\textwidth-\photosize-0.4cm\relax}
+  {\fontsize{21}{24}\selectfont\bfseries\color{accent}Said Bendrioue}\par
+  \vspace{2pt}
+  {\large\color{accent}Développeur Fullstack Java/Angular | Scrum Master | 7 ans d’exp}\par
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{\photosize}
+  \raggedleft\profilephoto
+\end{minipage}\par
+\vspace{3.5pt}
+{\small
+  \mbox{Nice et périphérie}%
+  \sep
+  \mbox{\href{tel:+33749320616}{+33749320616} (Mobile)}%
+  \sep
+  \mbox{\href{mailto:bendrioue@gmail.com}{bendrioue@gmail.com}}%
+  \sep
+  \mbox{\href{https://www.linkedin.com/in/said-bendrioue}{www.linkedin.com/in/said-bendrioue}}%
+}\par
+\vspace{4.5pt}
+{\color{accent}\rule{\textwidth}{0.7pt}}
+
+\section*{Summary}
+
+Développeur Fullstack Senior | Expert Java/Angular | Passionné par l'innovation technologique
+
+\statement{Avec plus de 7 ans d'expérience dans le développement web et mobile, je maîtrise l'écosystème Java et Angular pour concevoir des solutions robustes et évolutives.}
+
+\statement{Points forts : Architecture logicielle \& développement Fullstack (Backend/Frontend)}
+\statement{Technologies cœur : Java (Spring), Angular, TypeScript}
+\statement{DevOps/Cloud : Expérience en automatisation (CI/CD), conteneurisation et bonnes pratiques Cloud}
+\statement{Excellence technique alliée à une forte capacité de communication transverse}
+\statement{ADN professionnel : Curiosité insatiable pour les nouvelles technologies}
+\statement{• Rigoureux • Orienté solutions • Passionné par l'optimisation des processus (automatisation, qualité code)}
+
+\section*{Experience}
+
+\company{Docaposte}{3 ans 1 mois}
+
+\role{Développeur Fullstack Java/Angular | Scrum Master | Projet e-Vote}
+    {décembre 2025 - août 2026 (9 mois)}
+    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+
+\statement{Au sein de Docaposte (filiale numérique du Groupe La Poste), j’interviens sur l’application e-Vote dédiée aux élections professionnelles, dans un contexte à forts enjeux de fiabilité, de traçabilité et de conformité.}
+\statement{Sur ce projet, je contribue à la fois au développement back-end / front-end et à l’animation de l’équipe en mode Scrum.}
+
+\begin{itemize}
+  \item Conception et évolution du cycle de vie des candidatures (création, dépôt, validation/rejet, traçabilité des statuts et des dates).
+  \item Développement de fonctionnalités métier autour des pièces électorales (DIC, profession de foi, logo, signature), incluant règles de gestion, contrôles et sécurisation.
+  \item Mise en place et fiabilisation des exports métiers (CSV, PDF, ZIP, asynchrone) pour les besoins de suivi et d’exploitation.
+  \item Renforcement des habilitations et règles d’accès selon les profils (OS, valideur, admin) et amélioration de la robustesse applicative (corrections NPE, validations, sécurisation backend).
+\end{itemize}
+\statement{Implémentation et adaptation des notifications e-mail liées aux événements clés du processus de candidature.}
+\begin{itemize}
+  \item Améliorations continues UI/UX (tableaux, filtres, pagination, messages d’erreur, ergonomie de saisie) pour fluidifier les opérations métier.
+  \item Animation des rituels Scrum (daily, refinement, planning, review, rétro) et contribution au pilotage via Jira pour sécuriser les livraisons.
+\end{itemize}
+
+\role{Ingénieur Logiciel | Spécialiste Migration de Bases de Données | Projet Bilans Service (BS)}
+    {mai 2025 - novembre 2025 (7 mois)}
+    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+
+\statement{Chez Bilans Service (filiale de Docaposte), j'ai activement contribué au développement et à la modernisation d'une plateforme d'analyse de données financières critiques, utilisée par des établissements de crédit et sociétés de financement.}
+\statement{Mes contributions clés incluent :}
+
+\begin{itemize}
+  \item Pilotage et exécution d'une migration stratégique de bases de données d'Oracle vers PostgreSQL, incluant l'adaptation des objets SQL (requêtes, vues, procédures stockées) pour assurer une compatibilité et une performance optimales.
+  \item Optimisation des processus de migration grâce à l'utilisation de Ora2Pg pour la conversion des schémas et procédures, et déploiement de la base de données PostgreSQL dans un environnement Docker pour une portabilité et une industrialisation accrues.
+  \item Amélioration significative de la qualité logicielle par la refonte des tests unitaires, atteignant une couverture de code de 90 \%, et la mise en place de tests d'intégration robustes.
+  \item Résolution proactive d'incidents techniques et accompagnement des équipes durant les phases de recette et de mise en production, garantissant la stabilité et la performance de la plateforme.
+\end{itemize}
+
+\role{Développeur Fullstack Java/Angular | Projet Espace Activités Sociales (EAS)}
+    {août 2024 - mai 2025 (10 mois)}
+    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+
+\statement{Portail B2E sécurisé de gestion des prestations sociales (Chèque-Vacances, CESU, etc.) avec workflow de validation et module GED.}
+
+\begin{itemize}
+  \item Scrum Master : animation de sprints de 2 semaines, gestion du backlog et facilitation des cérémonies pour une équipe pluridisciplinaire.
+  \item Développement back-end : API REST Spring Boot orchestrant le workflow (dépôt, instruction, validation) et persistance des données sensibles (identifiants RH, IBAN) avec Spring Security / JWT.
+  \item Front-end : SPA Angular (RxJS, NgRx) offrant une expérience fluide pour les agents et les gestionnaires.
+\end{itemize}
+\statement{Sécurité RGPD : chiffrement des données personnelles, gestion des consentements, droit à l’effacement, et module GED (upload, stockage sécurisé, archivage).}
+\begin{itemize}
+  \item Infrastructure : déploiement sur hébergement souverain de Docaposte (Docker, CI/CD).
+\end{itemize}
+
+\role{Développeur Fullstack Java/Angular \& Scrum Master | Projet Maison France Services (MFS)}
+    {août 2023 - juillet 2024 (1 an)}
+    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+
+\statement{Au sein de Docaposte, j'ai contribué à la modernisation et au passage à l'échelle de la plateforme métier destinée aux 8~000 conseillers du réseau France Services. Ce projet d'envergure nationale vise à simplifier l'accès aux services publics pour des millions de citoyens.}
+\statement{Mon rôle a été double, alliant expertise technique et facilitation agile :}
+
+\track{\# Volet Technique (Développement API \& Frontend) :}
+\begin{itemize}
+  \item Conception et développement d'APIs robustes avec Java Spring Boot, garantissant la performance et la sécurité des échanges de données sensibles.
+  \item Développement Frontend avec Angular : Responsable de la partie création et gestion de formulaires dynamiques, un élément critique pour permettre aux conseillers de traiter efficacement les diverses démarches administratives (santé, retraite, impôts, etc.).
+  \item Mise en œuvre de solutions centrées sur l'UX, visant à réduire la charge cognitive des agents et à fiabiliser la saisie des données.
+  \item Évolution du SI dans un environnement de Cloud souverain et sécurisé.
+\end{itemize}
+
+\track{Volet Management (Scrum Master) :}
+\begin{itemize}
+  \item Facilitation des cérémonies Scrum (Daily, Sprint Planning, Review, Retrospective) pour une équipe de développement pluridisciplinaire.
+  \item Gestion du backlog en collaboration avec le Product Owner et levée des obstacles techniques et organisationnels.
+  \item Promotion de l'amélioration continue et de la vélocité de l'équipe dans un contexte de déploiement industriel.
+\end{itemize}
+
+\company{La Poste Groupe}{}
+
+\role{Développeur java backend}
+    {janvier 2023 - août 2023 (8 mois)}
+    {Montpellier, Occitanie, France}
+
+\statement{Développement et maintenance des API du service national d’affranchissement numérique (timbre électronique) en équipe Agile/Scrum de 7 personnes.}
+
+\begin{itemize}
+  \item Développer les API cœur de métier de génération et de vérification en temps réel des identifiants uniques de timbres électroniques.
+  \item Conçevoir les microservices backend pour la prise de commande, la sécurisation des codes et l’intégration au SI logistique courrier.
+  \item Réaliser des contrôles anti-fraude rigoureux et appliqué strictement les règles tarifaires lors de la prise en charge du pli.
+\end{itemize}
+
+\company{Crédit Agricole Technologies et Services}{}
+
+\role{Développeur Backend Java}
+    {mai 2022 - décembre 2022 (8 mois)}
+    {Montpellier, Occitanie, France}
+
+\statement{Squad « Clients, Offres, Liens » – Refonte du parcours omnicanal critique de changement d’adresse client à l’échelle nationale (Agile/Scrum, équipe de 8).}
+
+\begin{itemize}
+  \item Développé et sécurisé le parcours utilisateur web de mise à jour des données avec propagation synchrone et asynchrone vers le SI bancaire central.
+  \item Qualité logicielle : établir un standard de couverture de tests unitaires >90 \% via JUnit/Mockito et garantir la conformité du code via SonarQube.
+  \item Implémentation des règles métier strictes de validation postale et de traçabilité d’audit réglementaire.
+\end{itemize}
+
+\company{BOUYGUES CONSTRUCTION IT}{3 ans 3 mois}
+
+\role{Développeur FullStack Java/Angular}
+    {juillet 2019 - avril 2022 (2 ans 10 mois)}
+    {Casablanca-Settat, Maroc}
+
+\statement{Piloté la refonte majeure d’e-Doc, la solution de Gestion Électronique des Documents (GED) dédiée au pilotage mondial des chantiers Bouygues.}
+
+\begin{itemize}
+  \item Pilotage de la modernisation technique : J’ai orchestré la migration progressive de l’application depuis un socle legacy (Java 6 / GWT) vers une architecture web moderne, en assurant la continuité de service tout au long de la transition.
+  \item Développement des cœurs métier : J’ai conçu et implémenté les modules critiques, notamment la gestion complexe des plans d’ingénierie (versioning avancé, gestion des indices de révision) ainsi que l’automatisation des workflows d’approbation de visas impliquant MOE, MOA et sous-traitants.
+  \item Impact opérationnel : La livraison de l’application unifiée a significativement augmenté la vélocité de transmission des plans sur l’ensemble des chantiers et a réduit de manière drastique les pertes de versions documentaires.
+\end{itemize}
+
+\role{Stage PFE}
+    {février 2019 - juillet 2019 (6 mois)}
+    {Sidi Maarouf, Grand Casablanca, Morocco}
+
+\statement{Conception d’une solution de gestion de chantier terrain sur le modèle de l’application industrielle FinalCAD.}
+
+\begin{itemize}
+  \item Reverse-engineering fonctionnel et technique de l’application mobile de référence (architecture, workflows de synchronisation, mode hors-ligne)
+  \item Développement complet from scratch de la solution cible (formulaires qualité, annotations sur plans, traçabilité des réserves) pour les équipes de supervision locales
+\end{itemize}
+
+\section*{Technical Skills}
+
+\noindent\textbf{\color{accent}Languages}\hspace{0.55em} Java \sep JavaScript \sep TypeScript \sep SQL \sep HTML \sep CSS\par
+\vspace{1.6pt}
+\noindent\textbf{\color{accent}Backend}\hspace{0.55em} Développement Java \sep Spring \sep Spring Boot \sep API REST \sep Microservices \sep Spring Security \sep JWT \sep Hibernate \sep JPA \sep SOAP \sep DDD\par
+\vspace{1.6pt}
+\noindent\textbf{\color{accent}Frontend}\hspace{0.55em} Angular \sep TypeScript \sep RxJS \sep NgRx \sep JavaScript \sep HTML \sep CSS \sep Figma\par
+\vspace{1.6pt}
+\noindent\textbf{\color{accent}Databases}\hspace{0.55em} PostgreSQL \sep Oracle \sep SQL \sep Liquibase \sep Ora2Pg \sep Redis \sep NoSQL \sep Couchbase\par
+\vspace{1.6pt}
+\noindent\textbf{\color{accent}Messaging}\hspace{0.55em} Kafka \sep RabbitMQ\par
+\vspace{1.6pt}
+\noindent\textbf{\color{accent}Testing}\hspace{0.55em} JUnit \sep Mockito \sep Tests d'intégration \sep SonarQube \sep TDD \sep BDD\par
+\vspace{1.6pt}
+\noindent\textbf{\color{accent}DevOps / CI/CD}\hspace{0.55em} Git \sep Maven \sep Gradle \sep Docker \sep Kubernetes \sep CI/CD \sep GitLab CI \sep Jenkins \sep Elasticsearch \sep Logstash \sep Kibana \sep ELK\par
+\vspace{1.6pt}
+\noindent\textbf{\color{accent}Agile / Scrum}\hspace{0.55em} Scrum Master Professionnel \sep Scrum \sep Jira
+
+\section*{Languages}
+
+\noindent français (Full Professional) \sep Arabe (Native or Bilingual) \sep Anglais (Professional Working)
+
+\section*{Education}
+
+\education{Université Mohammed V de Rabat}
+  {Master informatique appliquée offshoring, Ingénierie logicielle}
+  {(2017 - 2019)}
+
+\education{Université Abdelmalek Essaâdi}
+  {licence fondamentale, Sciences mathematique et informatique}
+  {(septembre 2016 - juillet 2017)}
+
+\education{Université Abdelmalek Essaâdi}
+  {Diplôme d'études universitaires générales (DEUG), Sciences mathématiques et informatiques appliquées}
+  {(septembre 2013 - juillet 2015)}
+
+\education{Lycée Moulay Mohamed Ben Abdellah}
+  {Baccalauréat, Sciences Mathématiques option -A-}
+  {(2012 - 2013)}
+
+\end{document}
