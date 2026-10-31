@@ -1,77 +1,36 @@
+% !TEX program = xelatex
 % =============================================================================
-% Said Bendrioue — resume
-% Compile from this directory:
-%   xelatex -interaction=nonstopmode -halt-on-error resume.tex
+%  CV de Said Bendrioue
+%  Design : colonne latérale marine + bloc d'en-tête gris (reproduction du
+%  modèle « Mark Jackson »). Seul le design change ; le contenu est celui du
+%  CV précédent, à l'identique.
 %
-% Required file (same directory): profile.jpg
-%   To use another photograph, change \photofile below.
-% Required fonts: fonts/Lato-Regular.ttf, Lato-Bold.ttf, Lato-Italic.ttf,
-%   Lato-BoldItalic.ttf (Lato, SIL Open Font License).
+%  Compilation (deux passes, requises par les positions TikZ « current page ») :
+%      xelatex resume.tex && xelatex resume.tex
+%  ou  lualatex resume.tex && lualatex resume.tex
+%  ou  latexmk -xelatex resume.tex
+%
+%  Interligne 13,8 pt (modèle 14 pt) et bas de page un peu plus utilisé,
+%  pour 3 pages sans coller les lignes.
+%
+%  Fichiers à placer à côté de ce .tex :
+%      profile.jpg
+%      fonts/SourceSerif4-Regular.otf, -Bold.otf, -It.otf, -BoldIt.otf  (OFL)
+%      fonts/Lato-Regular.ttf, -Bold.ttf, -Italic.ttf, -BoldItalic.ttf    (OFL)
+%  Sans ces fichiers, repli automatique sur TeX Gyre Pagella et Source Sans 3
+%  (distribués avec TeX Live / MiKTeX).
 % =============================================================================
-
 \documentclass[a4paper,10pt]{article}
 
-\usepackage{xcolor}
-
-% -----------------------------------------------------------------------------
-% CUSTOMIZATION 1 — Accent color. One change recolors headings, name rule,
-% company names, and the photo ring.
-% -----------------------------------------------------------------------------
-\definecolor{accent}{HTML}{1F3A5F}
-
-\definecolor{ink}{HTML}{1C1C1C}
-\definecolor{muted}{HTML}{5E6772}
-\definecolor{rulegray}{HTML}{D5D8DE}
-
-% -----------------------------------------------------------------------------
-% CUSTOMIZATION 2 — Profile photo. Diameter, and the file name.
-% profile.jpg must sit in the same directory as this file.
-% -----------------------------------------------------------------------------
-\newlength{\photosize}
-\setlength{\photosize}{2.75cm}
-\newcommand{\photofile}{profile.jpg}
-
-% -----------------------------------------------------------------------------
-% CUSTOMIZATION 3 — Page margins and vertical rhythm.
-% -----------------------------------------------------------------------------
-\usepackage[
-  a4paper,
-  top=1.15cm,
-  bottom=1.15cm,
-  left=1.35cm,
-  right=1.35cm
-]{geometry}
-
-\newcommand{\sectionbefore}{8.5pt}
-\newcommand{\sectionafter}{3.5pt}
-\newcommand{\companybefore}{3pt}
-\newcommand{\rolebefore}{4.5pt}
-
+\usepackage[a4paper,margin=0pt,noheadfoot]{geometry}
 \usepackage{fontspec}
-% TeXOff keeps ASCII apostrophes and hyphens as typed. Lato has no U+2011
-% (non-breaking hyphen); those two source hyphens are set as a normal hyphen.
-\defaultfontfeatures{Ligatures={TeXOff,NoCommon}}
-\setmainfont{Lato}[
-  Path = ./fonts/,
-  Extension = .ttf,
-  UprightFont = *-Regular,
-  BoldFont = *-Bold,
-  ItalicFont = *-Italic,
-  BoldItalicFont = *-BoldItalic,
-  Ligatures = {TeXOff,NoCommon}
-]
-
 \usepackage[french]{babel}
-\frenchsetup{
-  AutoSpacePunctuation=false,
-  StandardLists=true
-}
-
+\frenchsetup{AutoSpacePunctuation=false,StandardLists=true}
+\usepackage{xcolor}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{enumitem}
-\usepackage{titlesec}
-\usepackage{graphicx}
-\usepackage{needspace}
+\usepackage{fontawesome5}
 \usepackage[
   unicode,
   hidelinks,
@@ -84,313 +43,720 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0pt}
 \setlength{\emergencystretch}{2em}
-\clubpenalty=8000
-\widowpenalty=8000
-\raggedbottom
-\raggedright
-\color{ink}
 
-\setlist[itemize]{
-  label=\textbullet,
-  leftmargin=1.15em,
-  labelsep=0.4em,
-  itemsep=1.15pt,
-  topsep=2pt,
-  parsep=0pt,
-  partopsep=0pt
+% =============================================================================
+% 1. PARAMÈTRES MODIFIABLES
+%    Positions : en mm depuis le coin haut-gauche de la page A4.
+%    « haut des capitales » = haut des majuscules (pas des accents).
+% =============================================================================
+
+% ----- 1.1 Couleurs ----------------------------------------------------------
+\definecolor{cvnavy}{HTML}{00294D}      % colonne latérale
+\definecolor{cvheaderbg}{HTML}{F5F5F5}  % bloc d'en-tête
+\definecolor{cvname}{HTML}{000000}      % nom + filet sous le nom
+\definecolor{cvsubtitle}{HTML}{525252}  % titre / poste
+\definecolor{cvsidetext}{HTML}{FFFFFF}  % textes, icônes et filets de la colonne marine
+\definecolor{cvbarfill}{HTML}{007CB0}   % barres et carrés : partie pleine
+\definecolor{cvbarempty}{HTML}{E6E6E6}  % barres et carrés : partie vide
+\definecolor{cvsep}{HTML}{8DA3B8}       % séparateur « · » entre compétences
+\definecolor{cvheading}{HTML}{03253D}   % titres de section, colonne droite
+\definecolor{cvbody}{HTML}{1A1A1A}      % texte courant, colonne droite
+\definecolor{cvdate}{HTML}{102D41}      % dates
+\definecolor{cvorg}{HTML}{000000}       % employeur / établissement
+\definecolor{cvmuted}{HTML}{525252}     % ancienneté et lieu
+\definecolor{cvbullet}{HTML}{000000}    % puces
+\definecolor{cvphotoborder}{HTML}{FFFFFF}
+
+% ----- 1.2 Polices -------------------------------------------------------------
+\newcommand\cvFontDir{./fonts/}
+\defaultfontfeatures{Ligatures={TeXOff,NoCommon}} % apostrophes et tirets tels que saisis
+
+% Corps (pt) et interlignes
+\newcommand\cvNameSize{18.5}          % nom (serif gras, capitales)
+\newcommand\cvNameTracking{1.5}       % espacement des lettres du nom (LetterSpace)
+\newcommand\cvSubtitleSize{10}        % titre / poste (serif) — le modèle mesure ≈ 10 pt
+\newcommand\cvSubtitleTracking{1}     % espacement des lettres du titre (LetterSpace)
+\newcommand\cvSidebarTitleSize{12.6}  % titres de la colonne marine (serif gras)
+\newcommand\cvSidebarSize{9}          % textes de la colonne marine (sans-serif)
+\newcommand\cvContactIconSize{9.5}    % icônes de contact
+\newcommand\cvMainTitleSize{12.8}     % titres de la colonne droite (serif gras)
+\newcommand\cvBodySize{9}             % texte courant (sans-serif)
+\newcommand\cvBodyLead{13.8}          % interligne du texte courant et des puces (14 pt modèle ; 13,8 pour rester à 3 pages)
+\newcommand\cvEntryTitleSize{11}      % intitulé d'une entrée (serif gras)
+\newcommand\cvEntryTitleLead{13.8}
+\newcommand\cvDateSize{8.5}           % dates (sans-serif gras)
+\newcommand\cvDateLead{11}
+\newcommand\cvOrgSize{10}             % employeur / établissement (sans-serif gras)
+\newcommand\cvTenureSize{9}           % ancienneté après l'employeur
+\newcommand\cvLocationSize{8.5}       % lieu, aligné à droite sous les dates
+
+% ----- 1.3 Page, colonne marine, bloc gris ------------------------------------
+\newlength\cvNavyX        \setlength\cvNavyX{2.3mm}       % bord gauche
+\newlength\cvNavyY        \setlength\cvNavyY{2.3mm}       % bord haut
+\newlength\cvNavyW        \setlength\cvNavyW{66.2mm}      % largeur
+\newlength\cvNavyBottom   \setlength\cvNavyBottom{2.3mm}  % marge sous la colonne
+\newlength\cvNavyRadius   \setlength\cvNavyRadius{2mm}    % rayon des coins
+
+\newlength\cvHeadX        \setlength\cvHeadX{74.7mm}      % bord gauche du bloc gris
+\newlength\cvHeadY        \setlength\cvHeadY{2.3mm}       % bord haut
+\newlength\cvHeadRight    \setlength\cvHeadRight{4.5mm}   % marge droite (largeur = 130,8 mm)
+\newlength\cvHeadH        \setlength\cvHeadH{28.6mm}      % hauteur
+\newlength\cvHeadInset    \setlength\cvHeadInset{2.5mm}   % retrait du titre s'il faut le réduire
+
+% ----- 1.4 En-tête -----------------------------------------------------------
+\newlength\cvNameTop      \setlength\cvNameTop{7.75mm}    % haut des capitales du nom
+\newlength\cvNameRuleTop  \setlength\cvNameRuleTop{16.8mm}% haut du filet
+\newlength\cvNameRuleW    \setlength\cvNameRuleW{32.3mm}  % largeur du filet
+\newlength\cvNameRuleThick\setlength\cvNameRuleThick{0.6mm}
+\newlength\cvSubtitleTop  \setlength\cvSubtitleTop{21.45mm}% haut des capitales du titre
+
+% ----- 1.5 Photo (forme « goutte » du modèle) ----------------------------------
+%  Trois coins au rayon maximal (moitié de la hauteur) et le coin bas-droit
+%  presque vif. Pour une arche (haut en demi-cercle, deux coins bas arrondis) :
+%  \cvPhotoRbl = 4mm et \cvPhotoRbr = 4mm.
+\newlength\cvPhotoX       \setlength\cvPhotoX{18.8mm}     % bord gauche
+\newlength\cvPhotoY       \setlength\cvPhotoY{4.8mm}      % bord haut
+\newlength\cvPhotoW       \setlength\cvPhotoW{30.6mm}
+\newlength\cvPhotoH       \setlength\cvPhotoH{30.1mm}
+\newlength\cvPhotoRtl     \setlength\cvPhotoRtl{15.05mm}  % rayon haut-gauche
+\newlength\cvPhotoRtr     \setlength\cvPhotoRtr{15.05mm}  % rayon haut-droit
+\newlength\cvPhotoRbr     \setlength\cvPhotoRbr{2.5mm}    % rayon bas-droit
+\newlength\cvPhotoRbl     \setlength\cvPhotoRbl{15.05mm}  % rayon bas-gauche
+\newlength\cvPhotoBorder  \setlength\cvPhotoBorder{0.35mm}% liseré blanc
+\newcommand\cvPhotoZoom{1}                                % 1 = recadrage « fill » exact
+\newlength\cvPhotoShiftX  \setlength\cvPhotoShiftX{0mm}   % décalage de l'image dans le cadre
+\newlength\cvPhotoShiftY  \setlength\cvPhotoShiftY{0mm}
+
+% ----- 1.6 Colonne marine : contenu --------------------------------------------
+\newlength\cvSbX          \setlength\cvSbX{10.9mm}        % bord gauche du contenu
+\newlength\cvSbW          \setlength\cvSbW{50mm}          % largeur du contenu (= barres)
+\newlength\cvSbTopOne     \setlength\cvSbTopOne{45.65mm}  % haut des capitales du 1er titre, page 1
+\newlength\cvSbTopN       \setlength\cvSbTopN{8mm}        % haut du contenu, pages suivantes
+\newlength\cvSbBottom     \setlength\cvSbBottom{292mm}    % dernière ligne de base admise
+\newlength\cvSbRuleGap    \setlength\cvSbRuleGap{3.4mm}   % ligne de base du titre -> filet
+\newlength\cvSbRuleThick  \setlength\cvSbRuleThick{0.7pt}
+\newlength\cvSbFirstItem  \setlength\cvSbFirstItem{5.8mm} % filet -> 1re ligne de base
+\newlength\cvSbSectionBefore\setlength\cvSbSectionBefore{9mm} % dernière ligne de base -> haut du titre suivant
+\newlength\cvContactPitch \setlength\cvContactPitch{6.42mm}% pas entre deux contacts
+\newlength\cvContactLead  \setlength\cvContactLead{4.37mm}% interligne si un contact passe à la ligne
+\newlength\cvContactFirstExtra\setlength\cvContactFirstExtra{1.55mm}
+\newlength\cvContactTextIndent\setlength\cvContactTextIndent{5.5mm}% début du texte
+\newlength\cvContactIconWidth\setlength\cvContactIconWidth{3.5mm}
+\newlength\cvContactIconRaise\setlength\cvContactIconRaise{0mm}
+\newlength\cvSkillPitch   \setlength\cvSkillPitch{9.82mm} % \skillbar : pas entre deux compétences
+\newlength\cvSkillBarGap  \setlength\cvSkillBarGap{2.15mm}% ligne de base du libellé -> haut de la barre
+\newlength\cvSkillBarThick\setlength\cvSkillBarThick{1.87mm}
+\newlength\cvSkillAfterExtra\setlength\cvSkillAfterExtra{3.05mm}% espace en plus après la dernière barre
+\newlength\cvListLead     \setlength\cvListLead{4.37mm}   % \skillgroup : interligne
+\newlength\cvGroupPitch   \setlength\cvGroupPitch{6.42mm} % \skillgroup : dernière ligne -> libellé suivant
+\newlength\cvLangPitch    \setlength\cvLangPitch{5.9mm}   % \langdots et \sidebaritem : pas
+\newlength\cvLangSquare   \setlength\cvLangSquare{3.1mm}  % côté d'un carré
+\newlength\cvLangSquareGap\setlength\cvLangSquareGap{1.87mm}
+\newlength\cvLangSquareRadius\setlength\cvLangSquareRadius{0.5mm}
+\newlength\cvLangRightInset\setlength\cvLangRightInset{1.1mm}% avant le bord droit des barres
+\newlength\cvLangSquareDrop\setlength\cvLangSquareDrop{0.3mm}% bas des carrés sous la ligne de base
+
+% ----- 1.7 Colonne droite : contenu --------------------------------------------
+\newlength\cvRcX          \setlength\cvRcX{77.7mm}        % bord gauche (bloc gris + 3 mm)
+\newlength\cvRcW          \setlength\cvRcW{125mm}         % largeur utile
+\newlength\cvRcTopOne     \setlength\cvRcTopOne{37.9mm}   % haut des capitales du 1er titre, page 1
+\newlength\cvRcTopN       \setlength\cvRcTopN{7.5mm}      % haut du contenu, pages suivantes
+\newlength\cvRcBottom     \setlength\cvRcBottom{292.5mm}  % dernière ligne de base admise (utilise le bas de page)
+\newlength\cvSplitTopSkip \setlength\cvSplitTopSkip{3.8mm}% haut du contenu -> 1re ligne de base (pages suivantes)
+\newlength\cvMainRuleGap  \setlength\cvMainRuleGap{3.15mm}% ligne de base du titre -> filet
+\newlength\cvMainRuleThick\setlength\cvMainRuleThick{0.5pt}
+\newlength\cvMainFirstBaseline\setlength\cvMainFirstBaseline{5.8mm}% filet -> 1re ligne de base
+\newlength\cvMainSectionBefore\setlength\cvMainSectionBefore{5.3mm}% dernière ligne de base -> haut du titre suivant
+\newlength\cvListAfterExtra\setlength\cvListAfterExtra{1.7mm}% en plus si la section précédente finit par des puces
+\newlength\cvEntryBefore  \setlength\cvEntryBefore{7.4mm}% dernière ligne de base -> intitulé suivant
+\newlength\cvEntryEmptyExtra\setlength\cvEntryEmptyExtra{0.7mm}% en plus après une entrée sans description
+\newlength\cvEntryOrgSkip \setlength\cvEntryOrgSkip{4.55mm}% intitulé -> employeur (lignes de base)
+\newlength\cvEntryBodySkip\setlength\cvEntryBodySkip{5.35mm}% employeur -> 1re ligne de description
+\newlength\cvLocationLead \setlength\cvLocationLead{4mm}  % si le lieu doit passer sous l'employeur
+\newlength\cvTitleDateGap \setlength\cvTitleDateGap{3mm}  % écart minimal intitulé / dates
+\newlength\cvDateColMax   \setlength\cvDateColMax{31mm}   % colonne des dates quand l'intitulé est long (modèle ≈ 31 mm)
+\newlength\cvTrackBefore  \setlength\cvTrackBefore{5.9mm} % sous-titre interne (Volet ...) : ligne de base
+\newlength\cvBulletIndent \setlength\cvBulletIndent{2.2mm}% bord gauche -> puce
+\newlength\cvBulletTextIndent\setlength\cvBulletTextIndent{6.3mm}% bord gauche -> texte
+\newlength\cvBulletSize   \setlength\cvBulletSize{1.4mm}  % diamètre de la puce
+\newlength\cvBulletRaise  \setlength\cvBulletRaise{1.1mm} % centre de la puce au-dessus de la ligne de base
+
+% =============================================================================
+% 2. POLICES
+% =============================================================================
+\IfFileExists{\cvFontDir Lato-Regular.ttf}{%
+  \setmainfont{Lato}[
+    Path = \cvFontDir, Extension = .ttf,
+    UprightFont = *-Regular, BoldFont = *-Bold,
+    ItalicFont = *-Italic, BoldItalicFont = *-BoldItalic]
+}{%
+  \setmainfont{SourceSans3}[
+    Extension = .otf,
+    UprightFont = *-Regular, BoldFont = *-Bold,
+    ItalicFont = *-It, BoldItalicFont = *-BoldIt]
+}
+\IfFileExists{\cvFontDir SourceSerif4-Regular.otf}{%
+  \newfontfamily\cvserif{SourceSerif4}[
+    Path = \cvFontDir, Extension = .otf,
+    UprightFont = *-Regular, BoldFont = *-Bold,
+    ItalicFont = *-It, BoldItalicFont = *-BoldIt]
+}{%
+  \newfontfamily\cvserif{texgyrepagella}[
+    Extension = .otf,
+    UprightFont = *-regular, BoldFont = *-bold,
+    ItalicFont = *-italic, BoldItalicFont = *-bolditalic]
 }
 
-\titleformat{\section}
-  {\large\bfseries\raggedright\color{accent}}
-  {}
-  {0pt}
-  {\MakeUppercase}
-  [\vspace{1pt}{\color{accent}\titlerule[0.55pt]}]
-\titlespacing*{\section}{0pt}{\sectionbefore}{\sectionafter}
+\newcommand\cvNameFont{\cvserif\bfseries\fontsize{\cvNameSize}{\cvNameSize}\selectfont
+  \addfontfeatures{LetterSpace=\cvNameTracking}}
+\newcommand\cvSubtitleFont{\cvserif\fontsize{\cvSubtitleSize}{\cvSubtitleSize}\selectfont
+  \addfontfeatures{LetterSpace=\cvSubtitleTracking}}
+\newcommand\cvSidebarTitleFont{\cvserif\bfseries
+  \fontsize{\cvSidebarTitleSize}{\cvSidebarTitleSize}\selectfont}
+\newcommand\cvSidebarFont{\normalfont\fontsize{\cvSidebarSize}{\cvListLead}\selectfont}
+\newcommand\cvGroupLabelFont{\bfseries}
+\newcommand\cvContactIconFont{\fontsize{\cvContactIconSize}{\cvContactIconSize}\selectfont}
+\newcommand\cvMainTitleFont{\cvserif\bfseries\fontsize{\cvMainTitleSize}{\cvMainTitleSize}\selectfont}
+\newcommand\cvBodyFont{\normalfont\fontsize{\cvBodySize}{\cvBodyLead}\selectfont}
+\newcommand\cvEntryTitleFont{\cvserif\bfseries
+  \fontsize{\cvEntryTitleSize}{\cvEntryTitleLead}\selectfont\color{cvname}}
+\newcommand\cvDateFont{\normalfont\bfseries\fontsize{\cvDateSize}{\cvDateLead}\selectfont\color{cvdate}}
+\newcommand\cvOrgFont{\normalfont\bfseries\fontsize{\cvOrgSize}{\cvBodyLead}\selectfont\color{cvorg}}
+\newcommand\cvTenureFont{\normalfont\fontsize{\cvTenureSize}{\cvBodyLead}\selectfont\color{cvmuted}}
+\newcommand\cvLocationFont{\normalfont\fontsize{\cvLocationSize}{\cvDateLead}\selectfont\color{cvmuted}}
+\newcommand\cvTrackFont{\bfseries\color{cvorg}}
 
-\newcommand{\sep}{%
-  \hspace{0.45em}{\color{rulegray}\textbar}\hspace{0.45em}%
-}
+% =============================================================================
+% 3. MÉCANIQUE DE MISE EN PAGE
+%    Chaque colonne est composée dans une boîte, puis découpée (\vsplit) et
+%    posée en position absolue (nœuds TikZ, overlay « current page »).
+%    Une page n'est ajoutée que s'il reste du contenu.
+% =============================================================================
+\makeatletter
+\newbox\cv@SBbox  \newbox\cv@RCbox
+\newbox\cv@SBpart \newbox\cv@RCpart
+\newbox\cv@boxA   \newbox\cv@boxB
+\newdimen\cv@dimA \newdimen\cv@dimB \newdimen\cv@capht
+\newdimen\cv@lastT \newdimen\cv@lastD \newdimen\cv@sbextra
+\newdimen\cv@sbtop \newdimen\cv@rctop
+\newcount\cv@page
+\newif\ifcv@colstart \newif\ifcv@aftertitle \newif\ifcv@lastlist
+\newif\ifcv@lastemptybody \newif\ifcv@more
 
-\newcommand{\profilephoto}{%
-  \begin{tikzpicture}
-    \begin{scope}
-      \clip (0,0) circle[radius=0.5\photosize];
-      \node[anchor=center, inner sep=0pt] at (0,0)
-        {\includegraphics[width=\photosize,height=\photosize]{\photofile}};
-    \end{scope}
-    \draw[accent, line width=0.45pt] (0,0) circle[radius=0.5\photosize];
-  \end{tikzpicture}%
-}
+\def\cv@name{}\def\cv@title{}\def\cv@photo{}
+\newcommand\cvname[1]{\def\cv@name{#1}}
+\newcommand\cvtitle[1]{\def\cv@title{#1}}
+\newcommand\cvphoto[1]{\def\cv@photo{#1}}
 
-% Employer for the roles that follow. #2 is the LinkedIn tenure, or empty.
-% The tenure is printed once, on the first role of that employer.
-\newcommand{\employer}{}
-\newcommand{\tenuretext}{}
-\newif\ifshowtenure
-\newcommand{\company}[2]{%
-  \renewcommand{\employer}{#1}%
-  \renewcommand{\tenuretext}{#2}%
-  \showtenuretrue
-  \vspace{\companybefore}%
-}
+\long\def\cv@ifblank#1{\if\relax\detokenize{#1}\relax
+  \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
 
-% Role. #1 title, #2 dates, #3 location.
-% The title wraps in the width left of the date, so a long title cannot
-% push the date onto the following line.
-\newlength{\datewidth}
-\newcommand{\role}[3]{%
-  \Needspace{6\baselineskip}%
-  \vspace{\rolebefore}%
-  \settowidth{\datewidth}{#2}%
-  \noindent
-  \begin{minipage}[t]{\dimexpr\textwidth-\datewidth-1.1em\relax}
-    \raggedright\textbf{#1}\strut
-  \end{minipage}%
-  \hfill
-  \begin{minipage}[t]{\datewidth}
-    \raggedleft\color{muted}#2\strut
-  \end{minipage}\par
-  \nopagebreak
-  \vspace{0.7pt}%
-  \noindent\textit{\color{accent}\employer}%
-  \ifshowtenure
-    \if\relax\detokenize\expandafter{\tenuretext}\relax\else
-      \textcolor{muted}{\ \textbar\ \textup{\tenuretext}}%
-    \fi
-    \global\showtenurefalse
+% Revient à la ligne de base précédente (ou au bas du filet / de la barre).
+\def\cv@toref{\par\nobreak\ifdim\prevdepth>\z@\vskip-\prevdepth\fi\nointerlineskip}
+% La prochaine ligne aura sa ligne de base à #1 sous ce point de référence.
+\def\cv@baselineat#1{\cv@toref\vskip\dimexpr#1-\baselineskip\relax\prevdepth\z@\nobreak}
+% Boîte dont la hauteur est celle des capitales : son bord haut = haut des majuscules.
+\def\cv@capbox#1#2{%
+  \setbox\cv@boxA\hbox{#1\global\cv@capht\fontcharht\font`\H\relax#2}%
+  \ht\cv@boxA\cv@capht\dp\cv@boxA\z@\box\cv@boxA}
+
+\def\cv@colsetup#1{%
+  \hsize#1\relax\linewidth\hsize\columnwidth\hsize\textwidth\hsize
+  \@totalleftmargin\z@\parindent\z@\parskip\z@\raggedright
+  \hyphenpenalty\@M\exhyphenpenalty50\relax
+  \clubpenalty\@M\widowpenalty\@M\frenchspacing\everypar{}%
+  \global\cv@colstarttrue\global\cv@aftertitlefalse
+  \global\cv@lastlistfalse\global\cv@lastemptybodyfalse\global\cv@sbextra\z@}
+
+\newenvironment{sidebar}%
+  {\global\setbox\cv@SBbox\vbox\bgroup\cv@colsetup\cvSbW\cvSidebarFont}%
+  {\par\egroup}
+\newenvironment{maincolumn}%
+  {\global\setbox\cv@RCbox\vbox\bgroup\cv@colsetup\cvRcW\cvBodyFont}%
+  {\par\egroup}
+
+% ----- Colonne marine ----------------------------------------------------------
+\newcommand\sidebarsection[1]{%
+  \par
+  \ifcv@colstart\global\cv@colstartfalse
+  \else\penalty\z@\cv@toref\vskip\dimexpr\cvSbSectionBefore+\cv@sbextra\relax\fi
+  \global\cv@sbextra\z@\nobreak
+  \setbox\cv@boxB\hbox{\cv@capbox\cvSidebarTitleFont{\MakeUppercase{#1}}}%
+  \cv@dimA\wd\cv@boxB\box\cv@boxB
+  \nobreak\nointerlineskip\vskip\cvSbRuleGap\nobreak
+  \hbox{\vrule width\cv@dimA height\cvSbRuleThick depth\z@}%
+  \nobreak\global\cv@aftertitletrue}
+
+% #1 : pas depuis l'élément précédent ; #2 : distance depuis le filet du titre.
+\def\cv@sbitemstart#1#2{%
+  \par
+  \ifcv@aftertitle\global\cv@aftertitlefalse\cv@baselineat{#2}%
+  \else\penalty\z@\cv@baselineat{#1}\fi
+  \global\cv@sbextra\z@}
+
+\newcommand\contactitem[2]{%
+  \begingroup
+  \cvSidebarFont\baselineskip\cvContactLead
+  \cv@sbitemstart\cvContactPitch{\dimexpr\cvSbFirstItem+\cvContactFirstExtra\relax}%
+  \leftskip\cvContactTextIndent
+  \noindent\llap{\hb@xt@\cvContactTextIndent{%
+    \raise\cvContactIconRaise\hb@xt@\cvContactIconWidth{\hss\cvContactIconFont#1\hss}\hss}}%
+  #2\par
+  \endgroup}
+
+\newcommand\skillbar[2]{% #2 : niveau de 0 à 5
+  \begingroup
+  \cvSidebarFont
+  \cv@sbitemstart\cvSkillPitch\cvSbFirstItem
+  \noindent#1\par
+  \cv@toref\vskip\cvSkillBarGap\nobreak
+  \pgfmathsetlength\cv@dimA{\cvSbW*(#2)/5}%
+  \cv@dimB\dimexpr\cvSbW-\cv@dimA\relax
+  \hbox{{\color{cvbarfill}\vrule width\cv@dimA height\cvSkillBarThick depth\z@}%
+        {\color{cvbarempty}\vrule width\cv@dimB height\cvSkillBarThick depth\z@}}%
+  \nobreak\vskip-\dimexpr\cvSkillBarGap+\cvSkillBarThick\relax\prevdepth\z@
+  \global\cv@sbextra\cvSkillAfterExtra
+  \endgroup}
+
+\def\cv@squares#1{%
+  \begin{tikzpicture}[baseline=0pt]
+    \foreach \cv@i in {1,...,5}{%
+      \fill[\ifnum\cv@i>#1 cvbarempty\else cvbarfill\fi,rounded corners=\cvLangSquareRadius]
+        ({(\cv@i-1)*(\cvLangSquare+\cvLangSquareGap)},-\cvLangSquareDrop)
+        rectangle ++(\cvLangSquare,\cvLangSquare);}%
+  \end{tikzpicture}}
+\newcommand\langdots[2]{% #2 : niveau de 0 à 5 (entier)
+  \begingroup
+  \cvSidebarFont
+  \cv@sbitemstart\cvLangPitch\cvSbFirstItem
+  \noindent\hb@xt@\hsize{#1\hfil\cv@squares{#2}\hskip\cvLangRightInset}\par
+  \endgroup}
+
+\newcommand\sidebaritem[1]{%
+  \begingroup
+  \cvSidebarFont
+  \cv@sbitemstart\cvLangPitch\cvSbFirstItem
+  \noindent#1\par
+  \endgroup}
+
+% Compétences sans niveau : libellé, puis liste séparée par des virgules.
+\newcommand\cvsep{\discretionary{}{}{\hbox{\hskip.32em{\color{cvsep}·}\hskip.32em}}}
+\ExplSyntaxOn
+\cs_new_protected:Npn \cv_itemlist:n #1
+  {
+    \bool_set_true:N \l_tmpa_bool
+    \clist_map_inline:nn {#1}
+      {
+        \bool_if:NTF \l_tmpa_bool { \bool_set_false:N \l_tmpa_bool } { \cvsep }
+        \mbox{##1}
+      }
+  }
+\cs_new_eq:NN \cv@itemlist \cv_itemlist:n
+\ExplSyntaxOff
+\newcommand\skillgroup[2]{%
+  \begingroup
+  \cvSidebarFont
+  \cv@sbitemstart\cvGroupPitch\cvSbFirstItem
+  \noindent{\cvGroupLabelFont#1}\par\nobreak
+  \noindent\cv@itemlist{#2}\par
+  \endgroup}
+
+% Pousse le contenu suivant au début de la colonne marine de la page suivante.
+\newcommand\sidebarpagebreak{%
+  \par
+  \vskip\z@\@plus1fil
+  \penalty-\@M
+  \vskip\z@\@plus-1fil
+  \global\cv@colstarttrue
+  \global\cv@aftertitlefalse
+  \global\cv@sbextra\z@}
+
+% ----- Colonne droite ----------------------------------------------------------
+\newcommand\mainsection[1]{%
+  \par
+  \ifcv@colstart\global\cv@colstartfalse
+  \else\penalty\z@\cv@toref
+    \vskip\dimexpr\cvMainSectionBefore\ifcv@lastlist+\cvListAfterExtra\fi\relax\fi
+  \global\cv@lastlistfalse\global\cv@lastemptybodyfalse\nobreak
+  \setbox\cv@boxB\hbox{\cv@capbox\cvMainTitleFont{\color{cvheading}\MakeUppercase{#1}}}%
+  \cv@dimA\wd\cv@boxB\box\cv@boxB
+  \nobreak\nointerlineskip\vskip\cvMainRuleGap\nobreak
+  \hbox{\color{cvheading}\vrule width\cv@dimA height\cvMainRuleThick depth\z@}%
+  \cv@baselineat\cvMainFirstBaseline
+  \global\cv@aftertitletrue
+  \@afterheading}
+
+% Coupe préférentielle avant la durée entre parenthèses (« (9 mois) »).
+\ExplSyntaxOn
+\cs_new_protected:Npn \cv_date_fmt:n #1
+  {
+    \tl_set:Nn \l_tmpa_tl {#1}
+    \tl_replace_once:Nnn \l_tmpa_tl {~(} {\linebreak[3](}
+    \tl_use:N \l_tmpa_tl
+  }
+\cs_new_eq:NN \cv@datefmt \cv_date_fmt:n
+\ExplSyntaxOff
+
+% Ligne 1 : intitulé à gauche, dates à droite, même ligne de base. Si les deux
+% ne tiennent pas, deux colonnes alignées en haut (dates sur \cvDateColMax).
+\def\cv@entryheader#1#2{%
+  \settowidth\cv@dimA{\cvEntryTitleFont#1}%
+  \settowidth\cv@dimB{\cvDateFont#2}%
+  \ifdim\dimexpr\cv@dimA+\cvTitleDateGap+\cv@dimB\relax>\hsize
+    \ifdim\cv@dimB>\cvDateColMax\cv@dimB\cvDateColMax\fi
+    \cv@dimA\dimexpr\hsize-\cv@dimB-\cvTitleDateGap\relax
+    \setbox\cv@boxA\vtop{\everypar{}\hsize\cv@dimA\raggedright
+      \cvEntryTitleFont#1\par\global\cv@lastT\prevdepth}%
+    \setbox\cv@boxB\vtop{\everypar{}\hsize\cv@dimB\raggedleft
+      \cvDateFont\cv@datefmt{#2}\par\global\cv@lastD\prevdepth}%
+    \cv@dimA\dimexpr\dp\cv@boxA-\cv@lastT\relax
+    \cv@dimB\dimexpr\dp\cv@boxB-\cv@lastD\relax
+    \ifdim\cv@dimB>\cv@dimA\cv@dimA\cv@dimB\fi
+    \hb@xt@\hsize{\box\cv@boxA\hfil\box\cv@boxB}%
+  \else
+    \hb@xt@\hsize{{\cvEntryTitleFont#1}\hfil{\cvDateFont#2}}%
+    \cv@dimA\z@
   \fi
-  \par\nopagebreak
-  {\small\color{muted}#3}\par
-  \vspace{0.4pt}%
-}
+  \nobreak\vskip\dimexpr\cv@dimA-\prevdepth\relax\prevdepth\z@}
 
-% Prose from the source that is not a bullet.
-\newcommand{\statement}[1]{%
-  \par\vspace{1.4pt}\noindent #1\par
-}
+% Ligne 2 : employeur à gauche, lieu à droite (ou en dessous s'il ne tient pas).
+\def\cv@entryorg#1#2{%
+  \cv@baselineat\cvEntryOrgSkip
+  \setbox\cv@boxA\hbox{\cvOrgFont#1}%
+  \cv@ifblank{#2}%
+    {\hb@xt@\hsize{\box\cv@boxA\hfil}}%
+    {\setbox\cv@boxB\hbox{\cvLocationFont#2}%
+     \ifdim\dimexpr\wd\cv@boxA+\cvTitleDateGap+\wd\cv@boxB\relax>\hsize
+       \hb@xt@\hsize{\box\cv@boxA\hfil}%
+       \cv@baselineat\cvLocationLead
+       \hb@xt@\hsize{\hfil\box\cv@boxB}%
+     \else
+       \hb@xt@\hsize{\box\cv@boxA\hfil\box\cv@boxB}%
+     \fi}%
+  \nobreak}
 
-% In-role label already present in the source (Volet Technique, etc.).
-\newcommand{\track}[1]{%
-  \par\vspace{3.5pt}\noindent\textbf{#1}\par\vspace{0.4pt}%
-}
+\newcommand\tenure[1]{{\cvTenureFont\hskip.45em|\hskip.45em#1}}
 
-% Dates stay in the same sentence as the school. A right-hand date column
-% was extracted by PDF readers as a separate block, after every degree.
-\newcommand{\education}[3]{%
-  \Needspace{3\baselineskip}%
-  \vspace{3.2pt}%
-  \noindent\textbf{#1}\hspace{0.5em}{\color{muted}#3}\par
-  \nopagebreak
-  \vspace{0.3pt}%
-  \noindent{\itshape #2}\par
-}
+% \entry[lieu]{intitulé}{dates}{organisme}{description ou puces}
+\NewDocumentCommand\entry{O{}mmm+m}{%
+  \par
+  \ifcv@aftertitle\global\cv@aftertitlefalse
+  \else\penalty\z@
+    \cv@baselineat{\dimexpr\cvEntryBefore\ifcv@lastemptybody+\cvEntryEmptyExtra\fi\relax}\fi
+  \global\cv@lastlistfalse
+  \cv@entryheader{#2}{#3}%
+  \cv@entryorg{#4}{#1}%
+  \cv@ifblank{#5}%
+    {\global\cv@lastemptybodytrue}%
+    {\global\cv@lastemptybodyfalse
+     \cv@baselineat\cvEntryBodySkip\@afterheading#5\par}}
 
+% Sous-titre interne à une expérience (« Volet ... »).
+\newcommand\track[1]{%
+  \par\penalty\z@\cv@baselineat\cvTrackBefore
+  \noindent{\cvTrackFont#1}\par\nobreak\@afterheading}
+
+\def\cv@bullet{\hskip\cvBulletIndent
+  \tikz[baseline=0pt]\fill[cvbullet](.5\cvBulletSize,\cvBulletRaise)circle[radius=.5\cvBulletSize];}
+\setlist[itemize]{label=\cv@bullet,align=left,leftmargin=\cvBulletTextIndent,
+  labelwidth=\cvBulletTextIndent,labelsep=0pt,labelindent=0pt,
+  itemsep=0pt,parsep=0pt,topsep=0pt,partopsep=0pt,after=\global\cv@lastlisttrue}
+
+% ----- En-tête, photo, pages ---------------------------------------------------
+\def\cv@photopath{%
+  ({\cvPhotoX+\cvPhotoRtl},{-\cvPhotoY})
+  -- ({\cvPhotoX+\cvPhotoW-\cvPhotoRtr},{-\cvPhotoY})
+  arc[start angle=90,end angle=0,radius=\cvPhotoRtr]
+  -- ({\cvPhotoX+\cvPhotoW},{-\cvPhotoY-\cvPhotoH+\cvPhotoRbr})
+  arc[start angle=0,end angle=-90,radius=\cvPhotoRbr]
+  -- ({\cvPhotoX+\cvPhotoRbl},{-\cvPhotoY-\cvPhotoH})
+  arc[start angle=270,end angle=180,radius=\cvPhotoRbl]
+  -- ({\cvPhotoX},{-\cvPhotoY-\cvPhotoRtl})
+  arc[start angle=180,end angle=90,radius=\cvPhotoRtl]
+  -- cycle}
+% Image redimensionnée pour couvrir tout le cadre (« fill »), puis rognée.
+\def\cv@photoimage{%
+  \pgfmathsetlength\cv@dimA{\cvPhotoW*\cvPhotoZoom}%
+  \pgfmathsetlength\cv@dimB{\cvPhotoH*\cvPhotoZoom}%
+  \setbox\cv@boxA\hbox{\includegraphics[width=\cv@dimA]{\cv@photo}}%
+  \ifdim\ht\cv@boxA<\cv@dimB\setbox\cv@boxA\hbox{\includegraphics[height=\cv@dimB]{\cv@photo}}\fi
+  \box\cv@boxA}
+\def\cv@drawphoto{%
+  \begin{scope}
+    \clip\cv@photopath;
+    \node[inner sep=0pt,anchor=center] at
+      ({\cvPhotoX+.5\cvPhotoW+\cvPhotoShiftX},{-\cvPhotoY-.5\cvPhotoH+\cvPhotoShiftY})
+      {\cv@photoimage};
+  \end{scope}
+  \draw[cvphotoborder,line width=\cvPhotoBorder]\cv@photopath;}
+
+\def\cv@drawheader{%
+  \pgfmathsetlengthmacro\cv@hx{\cvHeadX+(\paperwidth-\cvHeadRight-\cvHeadX)/2}%
+  \fill[cvheaderbg](\cvHeadX,-\cvHeadY)rectangle({\paperwidth-\cvHeadRight},{-\cvHeadY-\cvHeadH});
+  \node[anchor=north,inner sep=0pt] at (\cv@hx,-\cvNameTop)
+    {\cv@capbox\cvNameFont{\color{cvname}\MakeUppercase{\cv@name}}};
+  \fill[cvname]({\cv@hx-.5\cvNameRuleW},-\cvNameRuleTop)rectangle++(\cvNameRuleW,-\cvNameRuleThick);
+  \node[anchor=north,inner sep=0pt] at (\cv@hx,-\cvSubtitleTop) {\cv@subtitle};}
+% Titre sur une ligne : réduit à la largeur du bloc gris s'il la dépasse.
+\def\cv@subtitle{%
+  \setbox\cv@boxB\hbox{\cv@capbox\cvSubtitleFont{\color{cvsubtitle}\MakeUppercase{\cv@title}}}%
+  \cv@dimA\dimexpr\paperwidth-\cvHeadRight-\cvHeadX-2\cvHeadInset\relax
+  \ifdim\wd\cv@boxB>\cv@dimA\resizebox{\cv@dimA}{!}{\box\cv@boxB}\else\box\cv@boxB\fi}
+
+\def\cv@takepiece#1#2#3{%
+  \ifvoid#1\global\setbox#2\box\voidb@x
+  \else
+    \splittopskip\cvSplitTopSkip\splitmaxdepth\maxdimen\vbadness\@M\vfuzz\maxdimen
+    \global\setbox#2\vsplit#1 to #3\relax
+    \global\setbox#2\vbox{\unvbox#2}%
+  \fi}
+
+\def\cv@drawpage{%
+  \noindent
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[shift={(current page.north west)}]
+      \fill[cvnavy,rounded corners=\cvNavyRadius]
+        (\cvNavyX,-\cvNavyY)rectangle({\cvNavyX+\cvNavyW},{-\paperheight+\cvNavyBottom});
+      \ifnum\cv@page=\@ne\cv@drawheader\cv@drawphoto\fi
+      \ifvoid\cv@SBpart\else
+        \node[anchor=north west,inner sep=0pt,outer sep=0pt,text=cvsidetext]
+          at (\cvSbX,-\cv@sbtop) {\box\cv@SBpart};
+      \fi
+      \ifvoid\cv@RCpart\else
+        \node[anchor=north west,inner sep=0pt,outer sep=0pt,text=cvbody]
+          at (\cvRcX,-\cv@rctop) {\box\cv@RCpart};
+      \fi
+    \end{scope}
+  \end{tikzpicture}%
+  \par}
+
+\newcommand\makecv{%
+  \global\cv@page\@ne
+  \loop
+    \ifnum\cv@page=\@ne\cv@sbtop\cvSbTopOne\cv@rctop\cvRcTopOne
+    \else\cv@sbtop\cvSbTopN\cv@rctop\cvRcTopN\fi
+    \cv@takepiece\cv@SBbox\cv@SBpart{\dimexpr\cvSbBottom-\cv@sbtop\relax}%
+    \cv@takepiece\cv@RCbox\cv@RCpart{\dimexpr\cvRcBottom-\cv@rctop\relax}%
+    \cv@drawpage
+    \cv@morefalse
+    \ifvoid\cv@SBbox\else\cv@moretrue\fi
+    \ifvoid\cv@RCbox\else\cv@moretrue\fi
+    \ifnum\cv@page>19 \cv@morefalse\fi
+  \ifcv@more
+    \newpage
+    \global\advance\cv@page\@ne
+  \repeat
+  \typeout{CV: \the\cv@page\space page(s)}}
+\makeatother
+
+% =============================================================================
+% 4. CONTENU
+% =============================================================================
 \begin{document}
 
-% ----- Header: text first, then the decorative photograph ------------------
-\noindent
-\begin{minipage}[c]{\dimexpr\textwidth-\photosize-0.4cm\relax}
-  {\fontsize{21}{24}\selectfont\bfseries\color{accent}Said Bendrioue}\par
-  \vspace{2pt}
-  {\large\color{accent}Développeur Fullstack Java/Angular | Scrum Master | 7 ans d’exp}\par
-\end{minipage}%
-\hfill
-\begin{minipage}[c]{\photosize}
-  \raggedleft\profilephoto
-\end{minipage}\par
-\vspace{3.5pt}
-{\small
-  \mbox{Nice et périphérie}%
-  \sep
-  \mbox{\href{tel:+33749320616}{+33749320616} (Mobile)}%
-  \sep
-  \mbox{\href{mailto:bendrioue@gmail.com}{bendrioue@gmail.com}}%
-  \sep
-  \mbox{\href{https://www.linkedin.com/in/said-bendrioue}{www.linkedin.com/in/said-bendrioue}}%
-}\par
-\vspace{4.5pt}
-{\color{accent}\rule{\textwidth}{0.7pt}}
+\cvname{Said Bendrioue}
+\cvtitle{Développeur Fullstack Java/Angular | Scrum Master | 7 ans d’exp}
+\cvphoto{profile.jpg}
 
-\section*{Summary}
+% ----- Colonne marine ----------------------------------------------------------
+\begin{sidebar}
+\sidebarsection{Contact}
+\contactitem{\faMapMarker*}{Nice et périphérie}
+\contactitem{\faMobile*}{\href{tel:+33749320616}{+33749320616} (Mobile)}
+\contactitem{\faEnvelope}{\href{mailto:bendrioue@gmail.com}{bendrioue@gmail.com}}
+\contactitem{\faLinkedinIn}{\href{https://www.linkedin.com/in/said-bendrioue}{www.linkedin.com/in/said-bendrioue}}
+
+\sidebarsection{Technical Skills}
+\skillgroup{Languages}{Java, JavaScript, TypeScript, SQL, HTML, CSS}
+\skillgroup{Backend}{Développement Java, Spring, Spring Boot, API REST, Microservices, Spring Security, JWT, Hibernate, JPA, SOAP, DDD}
+\skillgroup{Frontend}{Angular, TypeScript, RxJS, NgRx, JavaScript, HTML, CSS, Figma}
+\skillgroup{Databases}{PostgreSQL, Oracle, SQL, Liquibase, Ora2Pg, Redis, NoSQL, Couchbase}
+\skillgroup{Messaging}{Kafka, RabbitMQ}
+\skillgroup{Testing}{JUnit, Mockito, Tests d'intégration, SonarQube, TDD, BDD}
+\skillgroup{DevOps / CI/CD}{Git, Maven, Gradle, Docker, Kubernetes, CI/CD, GitLab CI, Jenkins, Elasticsearch, Logstash, Kibana, ELK}
+\skillgroup{Agile / Scrum}{Scrum Master Professionnel, Scrum, Jira}
+
+\sidebarsection{Languages}
+% Niveaux LinkedIn convertis en carrés (échelle LinkedIn à 5 niveaux) :
+%   Elementary = 1, Limited Working = 2, Professional Working = 3,
+%   Full Professional = 4, Native or Bilingual = 5.
+\langdots{français}{4}  % Full Professional
+\langdots{Arabe}{5}     % Native or Bilingual
+\langdots{Anglais}{3}   % Professional Working
+
+% Page 2 du volet bleu. Soft skills : formulations déjà présentes dans le Summary.
+% Intérêts : thèmes professionnels déjà dans le CV (pas de hobbies personnels
+% dans la source). À remplacer si vous avez une liste de centres d'intérêt.
+\sidebarpagebreak
+\sidebarsection{Soft Skills}
+\sidebaritem{Rigoureux}
+\sidebaritem{Orienté solutions}
+\sidebaritem{Communication transverse}
+\sidebaritem{Curiosité insatiable pour les nouvelles technologies}
+\sidebaritem{Optimisation des processus (automatisation, qualité code)}
+
+\sidebarsection{Interests}
+\sidebaritem{Innovation technologique}
+\sidebaritem{Architecture logicielle}
+\sidebaritem{Automatisation}
+\end{sidebar}
+
+% ----- Colonne droite ----------------------------------------------------------
+\begin{maincolumn}
+\mainsection{Summary}
 
 Développeur Fullstack Senior | Expert Java/Angular | Passionné par l'innovation technologique
 
-\statement{Avec plus de 7 ans d'expérience dans le développement web et mobile, je maîtrise l'écosystème Java et Angular pour concevoir des solutions robustes et évolutives.}
+Avec plus de 7 ans d'expérience dans le développement web et mobile, je maîtrise l'écosystème Java et Angular pour concevoir des solutions robustes et évolutives.
 
-\statement{Points forts : Architecture logicielle \& développement Fullstack (Backend/Frontend)}
-\statement{Technologies cœur : Java (Spring), Angular, TypeScript}
-\statement{DevOps/Cloud : Expérience en automatisation (CI/CD), conteneurisation et bonnes pratiques Cloud}
-\statement{Excellence technique alliée à une forte capacité de communication transverse}
-\statement{ADN professionnel : Curiosité insatiable pour les nouvelles technologies}
-\statement{• Rigoureux • Orienté solutions • Passionné par l'optimisation des processus (automatisation, qualité code)}
+Points forts : Architecture logicielle \& développement Fullstack (Backend/Frontend)
 
-\section*{Experience}
+Technologies cœur : Java (Spring), Angular, TypeScript
 
-\company{Docaposte}{3 ans 1 mois}
+DevOps/Cloud : Expérience en automatisation (CI/CD), conteneurisation et bonnes pratiques Cloud
 
-\role{Développeur Fullstack Java/Angular | Scrum Master | Projet e-Vote}
-    {décembre 2025 - août 2026 (9 mois)}
-    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+Excellence technique alliée à une forte capacité de communication transverse
 
-\statement{Au sein de Docaposte (filiale numérique du Groupe La Poste), j’interviens sur l’application e-Vote dédiée aux élections professionnelles, dans un contexte à forts enjeux de fiabilité, de traçabilité et de conformité.}
-\statement{Sur ce projet, je contribue à la fois au développement back-end / front-end et à l’animation de l’équipe en mode Scrum.}
+ADN professionnel : Curiosité insatiable pour les nouvelles technologies
 
-\begin{itemize}
-  \item Conception et évolution du cycle de vie des candidatures (création, dépôt, validation/rejet, traçabilité des statuts et des dates).
-  \item Développement de fonctionnalités métier autour des pièces électorales (DIC, profession de foi, logo, signature), incluant règles de gestion, contrôles et sécurisation.
-  \item Mise en place et fiabilisation des exports métiers (CSV, PDF, ZIP, asynchrone) pour les besoins de suivi et d’exploitation.
-  \item Renforcement des habilitations et règles d’accès selon les profils (OS, valideur, admin) et amélioration de la robustesse applicative (corrections NPE, validations, sécurisation backend).
-\end{itemize}
-\statement{Implémentation et adaptation des notifications e-mail liées aux événements clés du processus de candidature.}
-\begin{itemize}
-  \item Améliorations continues UI/UX (tableaux, filtres, pagination, messages d’erreur, ergonomie de saisie) pour fluidifier les opérations métier.
-  \item Animation des rituels Scrum (daily, refinement, planning, review, rétro) et contribution au pilotage via Jira pour sécuriser les livraisons.
-\end{itemize}
+• Rigoureux • Orienté solutions • Passionné par l'optimisation des processus (automatisation, qualité code)
 
-\role{Ingénieur Logiciel | Spécialiste Migration de Bases de Données | Projet Bilans Service (BS)}
-    {mai 2025 - novembre 2025 (7 mois)}
-    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+\mainsection{Experience}
 
-\statement{Chez Bilans Service (filiale de Docaposte), j'ai activement contribué au développement et à la modernisation d'une plateforme d'analyse de données financières critiques, utilisée par des établissements de crédit et sociétés de financement.}
-\statement{Mes contributions clés incluent :}
+\entry[Sophia Antipolis, Provence-Alpes-Côte d’Azur, France]
+  {Développeur Fullstack Java/Angular | Scrum Master | Projet e-Vote}
+  {décembre 2025 - août 2026 (9 mois)}
+  {Docaposte\tenure{3 ans 1 mois}}
+  {Au sein de Docaposte (filiale numérique du Groupe La Poste), j’interviens sur l’application e-Vote dédiée aux élections professionnelles, dans un contexte à forts enjeux de fiabilité, de traçabilité et de conformité.
 
-\begin{itemize}
-  \item Pilotage et exécution d'une migration stratégique de bases de données d'Oracle vers PostgreSQL, incluant l'adaptation des objets SQL (requêtes, vues, procédures stockées) pour assurer une compatibilité et une performance optimales.
-  \item Optimisation des processus de migration grâce à l'utilisation de Ora2Pg pour la conversion des schémas et procédures, et déploiement de la base de données PostgreSQL dans un environnement Docker pour une portabilité et une industrialisation accrues.
-  \item Amélioration significative de la qualité logicielle par la refonte des tests unitaires, atteignant une couverture de code de 90 \%, et la mise en place de tests d'intégration robustes.
-  \item Résolution proactive d'incidents techniques et accompagnement des équipes durant les phases de recette et de mise en production, garantissant la stabilité et la performance de la plateforme.
-\end{itemize}
+  Sur ce projet, je contribue à la fois au développement back-end / front-end et à l’animation de l’équipe en mode Scrum.
+  \begin{itemize}
+    \item Conception et évolution du cycle de vie des candidatures (création, dépôt, validation/rejet, traçabilité des statuts et des dates).
+    \item Développement de fonctionnalités métier autour des pièces électorales (DIC, profession de foi, logo, signature), incluant règles de gestion, contrôles et sécurisation.
+    \item Mise en place et fiabilisation des exports métiers (CSV, PDF, ZIP, asynchrone) pour les besoins de suivi et d’exploitation.
+    \item Renforcement des habilitations et règles d’accès selon les profils (OS, valideur, admin) et amélioration de la robustesse applicative (corrections NPE, validations, sécurisation backend).
+  \end{itemize}
+  Implémentation et adaptation des notifications e-mail liées aux événements clés du processus de candidature.
+  \begin{itemize}
+    \item Améliorations continues UI/UX (tableaux, filtres, pagination, messages d’erreur, ergonomie de saisie) pour fluidifier les opérations métier.
+    \item Animation des rituels Scrum (daily, refinement, planning, review, rétro) et contribution au pilotage via Jira pour sécuriser les livraisons.
+  \end{itemize}}
 
-\role{Développeur Fullstack Java/Angular | Projet Espace Activités Sociales (EAS)}
-    {août 2024 - mai 2025 (10 mois)}
-    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+\entry[Sophia Antipolis, Provence-Alpes-Côte d’Azur, France]
+  {Ingénieur Logiciel | Spécialiste Migration de Bases de Données | Projet Bilans Service (BS)}
+  {mai 2025 - novembre 2025 (7 mois)}
+  {Docaposte}
+  {Chez Bilans Service (filiale de Docaposte), j'ai activement contribué au développement et à la modernisation d'une plateforme d'analyse de données financières critiques, utilisée par des établissements de crédit et sociétés de financement.
 
-\statement{Portail B2E sécurisé de gestion des prestations sociales (Chèque-Vacances, CESU, etc.) avec workflow de validation et module GED.}
+  Mes contributions clés incluent :
+  \begin{itemize}
+    \item Pilotage et exécution d'une migration stratégique de bases de données d'Oracle vers PostgreSQL, incluant l'adaptation des objets SQL (requêtes, vues, procédures stockées) pour assurer une compatibilité et une performance optimales.
+    \item Optimisation des processus de migration grâce à l'utilisation de Ora2Pg pour la conversion des schémas et procédures, et déploiement de la base de données PostgreSQL dans un environnement Docker pour une portabilité et une industrialisation accrues.
+    \item Amélioration significative de la qualité logicielle par la refonte des tests unitaires, atteignant une couverture de code de 90 \%, et la mise en place de tests d'intégration robustes.
+    \item Résolution proactive d'incidents techniques et accompagnement des équipes durant les phases de recette et de mise en production, garantissant la stabilité et la performance de la plateforme.
+  \end{itemize}}
 
-\begin{itemize}
-  \item Scrum Master : animation de sprints de 2 semaines, gestion du backlog et facilitation des cérémonies pour une équipe pluridisciplinaire.
-  \item Développement back-end : API REST Spring Boot orchestrant le workflow (dépôt, instruction, validation) et persistance des données sensibles (identifiants RH, IBAN) avec Spring Security / JWT.
-  \item Front-end : SPA Angular (RxJS, NgRx) offrant une expérience fluide pour les agents et les gestionnaires.
-\end{itemize}
-\statement{Sécurité RGPD : chiffrement des données personnelles, gestion des consentements, droit à l’effacement, et module GED (upload, stockage sécurisé, archivage).}
-\begin{itemize}
-  \item Infrastructure : déploiement sur hébergement souverain de Docaposte (Docker, CI/CD).
-\end{itemize}
+\entry[Sophia Antipolis, Provence-Alpes-Côte d’Azur, France]
+  {Développeur Fullstack Java/Angular | Projet Espace Activités Sociales (EAS)}
+  {août 2024 - mai 2025 (10 mois)}
+  {Docaposte}
+  {Portail B2E sécurisé de gestion des prestations sociales (Chèque-Vacances, CESU, etc.) avec workflow de validation et module GED.
+  \begin{itemize}
+    \item Scrum Master : animation de sprints de 2 semaines, gestion du backlog et facilitation des cérémonies pour une équipe pluridisciplinaire.
+    \item Développement back-end : API REST Spring Boot orchestrant le workflow (dépôt, instruction, validation) et persistance des données sensibles (identifiants RH, IBAN) avec Spring Security / JWT.
+    \item Front-end : SPA Angular (RxJS, NgRx) offrant une expérience fluide pour les agents et les gestionnaires.
+  \end{itemize}
+  Sécurité RGPD : chiffrement des données personnelles, gestion des consentements, droit à l’effacement, et module GED (upload, stockage sécurisé, archivage).
+  \begin{itemize}
+    \item Infrastructure : déploiement sur hébergement souverain de Docaposte (Docker, CI/CD).
+  \end{itemize}}
 
-\role{Développeur Fullstack Java/Angular \& Scrum Master | Projet Maison France Services (MFS)}
-    {août 2023 - juillet 2024 (1 an)}
-    {Sophia Antipolis, Provence-Alpes-Côte d’Azur, France}
+\entry[Sophia Antipolis, Provence-Alpes-Côte d’Azur, France]
+  {Développeur Fullstack Java/Angular \& Scrum Master | Projet Maison France Services (MFS)}
+  {août 2023 - juillet 2024 (1 an)}
+  {Docaposte}
+  {Au sein de Docaposte, j'ai contribué à la modernisation et au passage à l'échelle de la plateforme métier destinée aux 8~000 conseillers du réseau France Services. Ce projet d'envergure nationale vise à simplifier l'accès aux services publics pour des millions de citoyens.
 
-\statement{Au sein de Docaposte, j'ai contribué à la modernisation et au passage à l'échelle de la plateforme métier destinée aux 8~000 conseillers du réseau France Services. Ce projet d'envergure nationale vise à simplifier l'accès aux services publics pour des millions de citoyens.}
-\statement{Mon rôle a été double, alliant expertise technique et facilitation agile :}
+  Mon rôle a été double, alliant expertise technique et facilitation agile :
+  \track{\# Volet Technique (Développement API \& Frontend) :}
+  \begin{itemize}
+    \item Conception et développement d'APIs robustes avec Java Spring Boot, garantissant la performance et la sécurité des échanges de données sensibles.
+    \item Développement Frontend avec Angular : Responsable de la partie création et gestion de formulaires dynamiques, un élément critique pour permettre aux conseillers de traiter efficacement les diverses démarches administratives (santé, retraite, impôts, etc.).
+    \item Mise en œuvre de solutions centrées sur l'UX, visant à réduire la charge cognitive des agents et à fiabiliser la saisie des données.
+    \item Évolution du SI dans un environnement de Cloud souverain et sécurisé.
+  \end{itemize}
+  \track{Volet Management (Scrum Master) :}
+  \begin{itemize}
+    \item Facilitation des cérémonies Scrum (Daily, Sprint Planning, Review, Retrospective) pour une équipe de développement pluridisciplinaire.
+    \item Gestion du backlog en collaboration avec le Product Owner et levée des obstacles techniques et organisationnels.
+    \item Promotion de l'amélioration continue et de la vélocité de l'équipe dans un contexte de déploiement industriel.
+  \end{itemize}}
 
-\track{\# Volet Technique (Développement API \& Frontend) :}
-\begin{itemize}
-  \item Conception et développement d'APIs robustes avec Java Spring Boot, garantissant la performance et la sécurité des échanges de données sensibles.
-  \item Développement Frontend avec Angular : Responsable de la partie création et gestion de formulaires dynamiques, un élément critique pour permettre aux conseillers de traiter efficacement les diverses démarches administratives (santé, retraite, impôts, etc.).
-  \item Mise en œuvre de solutions centrées sur l'UX, visant à réduire la charge cognitive des agents et à fiabiliser la saisie des données.
-  \item Évolution du SI dans un environnement de Cloud souverain et sécurisé.
-\end{itemize}
+\entry[Montpellier, Occitanie, France]
+  {Développeur java backend}
+  {janvier 2023 - août 2023 (8 mois)}
+  {La Poste Groupe}
+  {Développement et maintenance des API du service national d’affranchissement numérique (timbre électronique) en équipe Agile/Scrum de 7 personnes.
+  \begin{itemize}
+    \item Développer les API cœur de métier de génération et de vérification en temps réel des identifiants uniques de timbres électroniques.
+    \item Conçevoir les microservices backend pour la prise de commande, la sécurisation des codes et l’intégration au SI logistique courrier.
+    \item Réaliser des contrôles anti-fraude rigoureux et appliqué strictement les règles tarifaires lors de la prise en charge du pli.
+  \end{itemize}}
 
-\track{Volet Management (Scrum Master) :}
-\begin{itemize}
-  \item Facilitation des cérémonies Scrum (Daily, Sprint Planning, Review, Retrospective) pour une équipe de développement pluridisciplinaire.
-  \item Gestion du backlog en collaboration avec le Product Owner et levée des obstacles techniques et organisationnels.
-  \item Promotion de l'amélioration continue et de la vélocité de l'équipe dans un contexte de déploiement industriel.
-\end{itemize}
+\entry[Montpellier, Occitanie, France]
+  {Développeur Backend Java}
+  {mai 2022 - décembre 2022 (8 mois)}
+  {Crédit Agricole Technologies et Services}
+  {Squad « Clients, Offres, Liens » – Refonte du parcours omnicanal critique de changement d’adresse client à l’échelle nationale (Agile/Scrum, équipe de 8).
+  \begin{itemize}
+    \item Développé et sécurisé le parcours utilisateur web de mise à jour des données avec propagation synchrone et asynchrone vers le SI bancaire central.
+    \item Qualité logicielle : établir un standard de couverture de tests unitaires >90 \% via JUnit/Mockito et garantir la conformité du code via SonarQube.
+    \item Implémentation des règles métier strictes de validation postale et de traçabilité d’audit réglementaire.
+  \end{itemize}}
 
-\company{La Poste Groupe}{}
+\entry[Casablanca-Settat, Maroc]
+  {Développeur FullStack Java/Angular}
+  {juillet 2019 - avril 2022 (2 ans 10 mois)}
+  {BOUYGUES CONSTRUCTION IT\tenure{3 ans 3 mois}}
+  {Piloté la refonte majeure d’e-Doc, la solution de Gestion Électronique des Documents (GED) dédiée au pilotage mondial des chantiers Bouygues.
+  \begin{itemize}
+    \item Pilotage de la modernisation technique : J’ai orchestré la migration progressive de l’application depuis un socle legacy (Java 6 / GWT) vers une architecture web moderne, en assurant la continuité de service tout au long de la transition.
+    \item Développement des cœurs métier : J’ai conçu et implémenté les modules critiques, notamment la gestion complexe des plans d’ingénierie (versioning avancé, gestion des indices de révision) ainsi que l’automatisation des workflows d’approbation de visas impliquant MOE, MOA et sous-traitants.
+    \item Impact opérationnel : La livraison de l’application unifiée a significativement augmenté la vélocité de transmission des plans sur l’ensemble des chantiers et a réduit de manière drastique les pertes de versions documentaires.
+  \end{itemize}}
 
-\role{Développeur java backend}
-    {janvier 2023 - août 2023 (8 mois)}
-    {Montpellier, Occitanie, France}
+\entry[Sidi Maarouf, Grand Casablanca, Morocco]
+  {Stage PFE}
+  {février 2019 - juillet 2019 (6 mois)}
+  {BOUYGUES CONSTRUCTION IT}
+  {Conception d’une solution de gestion de chantier terrain sur le modèle de l’application industrielle FinalCAD.
+  \begin{itemize}
+    \item Reverse-engineering fonctionnel et technique de l’application mobile de référence (architecture, workflows de synchronisation, mode hors-ligne)
+    \item Développement complet from scratch de la solution cible (formulaires qualité, annotations sur plans, traçabilité des réserves) pour les équipes de supervision locales
+  \end{itemize}}
 
-\statement{Développement et maintenance des API du service national d’affranchissement numérique (timbre électronique) en équipe Agile/Scrum de 7 personnes.}
+\mainsection{Education}
 
-\begin{itemize}
-  \item Développer les API cœur de métier de génération et de vérification en temps réel des identifiants uniques de timbres électroniques.
-  \item Conçevoir les microservices backend pour la prise de commande, la sécurisation des codes et l’intégration au SI logistique courrier.
-  \item Réaliser des contrôles anti-fraude rigoureux et appliqué strictement les règles tarifaires lors de la prise en charge du pli.
-\end{itemize}
-
-\company{Crédit Agricole Technologies et Services}{}
-
-\role{Développeur Backend Java}
-    {mai 2022 - décembre 2022 (8 mois)}
-    {Montpellier, Occitanie, France}
-
-\statement{Squad « Clients, Offres, Liens » – Refonte du parcours omnicanal critique de changement d’adresse client à l’échelle nationale (Agile/Scrum, équipe de 8).}
-
-\begin{itemize}
-  \item Développé et sécurisé le parcours utilisateur web de mise à jour des données avec propagation synchrone et asynchrone vers le SI bancaire central.
-  \item Qualité logicielle : établir un standard de couverture de tests unitaires >90 \% via JUnit/Mockito et garantir la conformité du code via SonarQube.
-  \item Implémentation des règles métier strictes de validation postale et de traçabilité d’audit réglementaire.
-\end{itemize}
-
-\company{BOUYGUES CONSTRUCTION IT}{3 ans 3 mois}
-
-\role{Développeur FullStack Java/Angular}
-    {juillet 2019 - avril 2022 (2 ans 10 mois)}
-    {Casablanca-Settat, Maroc}
-
-\statement{Piloté la refonte majeure d’e-Doc, la solution de Gestion Électronique des Documents (GED) dédiée au pilotage mondial des chantiers Bouygues.}
-
-\begin{itemize}
-  \item Pilotage de la modernisation technique : J’ai orchestré la migration progressive de l’application depuis un socle legacy (Java 6 / GWT) vers une architecture web moderne, en assurant la continuité de service tout au long de la transition.
-  \item Développement des cœurs métier : J’ai conçu et implémenté les modules critiques, notamment la gestion complexe des plans d’ingénierie (versioning avancé, gestion des indices de révision) ainsi que l’automatisation des workflows d’approbation de visas impliquant MOE, MOA et sous-traitants.
-  \item Impact opérationnel : La livraison de l’application unifiée a significativement augmenté la vélocité de transmission des plans sur l’ensemble des chantiers et a réduit de manière drastique les pertes de versions documentaires.
-\end{itemize}
-
-\role{Stage PFE}
-    {février 2019 - juillet 2019 (6 mois)}
-    {Sidi Maarouf, Grand Casablanca, Morocco}
-
-\statement{Conception d’une solution de gestion de chantier terrain sur le modèle de l’application industrielle FinalCAD.}
-
-\begin{itemize}
-  \item Reverse-engineering fonctionnel et technique de l’application mobile de référence (architecture, workflows de synchronisation, mode hors-ligne)
-  \item Développement complet from scratch de la solution cible (formulaires qualité, annotations sur plans, traçabilité des réserves) pour les équipes de supervision locales
-\end{itemize}
-
-\section*{Technical Skills}
-
-\noindent\textbf{\color{accent}Languages}\hspace{0.55em} Java \sep JavaScript \sep TypeScript \sep SQL \sep HTML \sep CSS\par
-\vspace{1.6pt}
-\noindent\textbf{\color{accent}Backend}\hspace{0.55em} Développement Java \sep Spring \sep Spring Boot \sep API REST \sep Microservices \sep Spring Security \sep JWT \sep Hibernate \sep JPA \sep SOAP \sep DDD\par
-\vspace{1.6pt}
-\noindent\textbf{\color{accent}Frontend}\hspace{0.55em} Angular \sep TypeScript \sep RxJS \sep NgRx \sep JavaScript \sep HTML \sep CSS \sep Figma\par
-\vspace{1.6pt}
-\noindent\textbf{\color{accent}Databases}\hspace{0.55em} PostgreSQL \sep Oracle \sep SQL \sep Liquibase \sep Ora2Pg \sep Redis \sep NoSQL \sep Couchbase\par
-\vspace{1.6pt}
-\noindent\textbf{\color{accent}Messaging}\hspace{0.55em} Kafka \sep RabbitMQ\par
-\vspace{1.6pt}
-\noindent\textbf{\color{accent}Testing}\hspace{0.55em} JUnit \sep Mockito \sep Tests d'intégration \sep SonarQube \sep TDD \sep BDD\par
-\vspace{1.6pt}
-\noindent\textbf{\color{accent}DevOps / CI/CD}\hspace{0.55em} Git \sep Maven \sep Gradle \sep Docker \sep Kubernetes \sep CI/CD \sep GitLab CI \sep Jenkins \sep Elasticsearch \sep Logstash \sep Kibana \sep ELK\par
-\vspace{1.6pt}
-\noindent\textbf{\color{accent}Agile / Scrum}\hspace{0.55em} Scrum Master Professionnel \sep Scrum \sep Jira
-
-\section*{Languages}
-
-\noindent français (Full Professional) \sep Arabe (Native or Bilingual) \sep Anglais (Professional Working)
-
-\section*{Education}
-
-\education{Université Mohammed V de Rabat}
-  {Master informatique appliquée offshoring, Ingénierie logicielle}
+\entry{Master informatique appliquée offshoring, Ingénierie logicielle}
   {(2017 - 2019)}
+  {Université Mohammed V de Rabat}
+  {}
 
-\education{Université Abdelmalek Essaâdi}
-  {licence fondamentale, Sciences mathematique et informatique}
+\entry{licence fondamentale, Sciences mathematique et informatique}
   {(septembre 2016 - juillet 2017)}
+  {Université Abdelmalek Essaâdi}
+  {}
 
-\education{Université Abdelmalek Essaâdi}
-  {Diplôme d'études universitaires générales (DEUG), Sciences mathématiques et informatiques appliquées}
+\entry{Diplôme d'études universitaires générales (DEUG), Sciences mathématiques et informatiques appliquées}
   {(septembre 2013 - juillet 2015)}
+  {Université Abdelmalek Essaâdi}
+  {}
 
-\education{Lycée Moulay Mohamed Ben Abdellah}
-  {Baccalauréat, Sciences Mathématiques option -A-}
+\entry{Baccalauréat, Sciences Mathématiques option -A-}
   {(2012 - 2013)}
+  {Lycée Moulay Mohamed Ben Abdellah}
+  {}
+\end{maincolumn}
 
+\makecv
 \end{document}

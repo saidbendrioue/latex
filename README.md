@@ -1,23 +1,16 @@
-# Projet LaTeX Hello World
+# CV LaTeX
 
-Projet LaTeX minimal qui produit une page PDF « Hello World ».
+Sources du CV. `resume.tex` est la version mise en page. `resume-ats.tex` est la version une colonne pour les formulaires en ligne.
 
-## Prérequis
+## Compilation locale
 
-- TeX Live (`pdflatex`)
-
-Sur Debian/Ubuntu :
+XeLaTeX. `resume.tex` a besoin de deux passes.
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y texlive-latex-base texlive-lang-french
+xelatex resume.tex && xelatex resume.tex
+xelatex resume-ats.tex
 ```
 
-## Compilation
+## GitHub Actions
 
-```bash
-cd latex
-pdflatex main.tex
-```
-
-Le fichier `main.pdf` est généré dans ce dossier.
+Chaque push sur `main` compile `resume.pdf` et `resume-ats.pdf`, les publie en artefacts du workflow, puis les enregistre dans le dépôt s'ils ont changé.

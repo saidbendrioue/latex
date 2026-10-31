@@ -1,0 +1,51 @@
+name: Compile PDF
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile resume
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: resume.tex
+          compiler: xelatex
+          args: -interaction=nonstopmode -halt-on-error -file-line-error
+
+      - name: Compile ATS resume
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: resume-ats.tex
+          compiler: xelatex
+          args: -interaction=nonstopmode -halt-on-error -file-line-error
+
+      - name: Upload PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: resume-pdfs
+          path: |
+            resume.pdf
+            resume-ats.pdf
+          if-no-files-found: error
+
+      - name: Commit compiled PDFs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- resume.pdf resume-ats.pdf
+          if git diff --staged --quiet; then
+            echo "PDFs are already up to date."
+            exit 0
+          fi
+          git commit -m "Compile resume PDFs from latest sources"
+          git push
