@@ -5,10 +5,14 @@
 %  modèle « Mark Jackson »). Seul le design change ; le contenu est celui du
 %  CV précédent, à l'identique.
 %
-%  Compilation (deux passes, requises par les positions TikZ « current page ») :
-%      xelatex resume.tex && xelatex resume.tex
-%  ou  lualatex resume.tex && lualatex resume.tex
+%  Compilation :
+%      xelatex resume.tex
+%  ou  lualatex resume.tex
 %  ou  latexmk -xelatex resume.tex
+%
+%  La page est dessinée dans le hook shipout/background. TikZ « remember
+%  picture » / « current page » décale toute la page d'une hauteur de papier
+%  avec XeTeX de TeX Live 2026, ce qui produit des pages blanches.
 %
 %  Interligne 13,8 pt (modèle 14 pt) et bas de page un peu plus utilisé,
 %  pour 3 pages sans coller les lignes.
@@ -229,7 +233,8 @@
 % =============================================================================
 % 3. MÉCANIQUE DE MISE EN PAGE
 %    Chaque colonne est composée dans une boîte, puis découpée (\vsplit) et
-%    posée en position absolue (nœuds TikZ, overlay « current page »).
+%    posée en position absolue. L'origine est le coin haut-gauche de la page
+%    (hook shipout/background : y positif vers le haut).
 %    Une page n'est ajoutée que s'il reste du contenu.
 % =============================================================================
 \makeatletter
@@ -512,23 +517,24 @@
   \fi}
 
 \def\cv@drawpage{%
-  \noindent
-  \begin{tikzpicture}[remember picture,overlay]
-    \begin{scope}[shift={(current page.north west)}]
-      \fill[cvnavy,rounded corners=\cvNavyRadius]
-        (\cvNavyX,-\cvNavyY)rectangle({\cvNavyX+\cvNavyW},{-\paperheight+\cvNavyBottom});
-      \ifnum\cv@page=\@ne\cv@drawheader\cv@drawphoto\fi
-      \ifvoid\cv@SBpart\else
-        \node[anchor=north west,inner sep=0pt,outer sep=0pt,text=cvsidetext]
-          at (\cvSbX,-\cv@sbtop) {\box\cv@SBpart};
-      \fi
-      \ifvoid\cv@RCpart\else
-        \node[anchor=north west,inner sep=0pt,outer sep=0pt,text=cvbody]
-          at (\cvRcX,-\cv@rctop) {\box\cv@RCpart};
-      \fi
-    \end{scope}
-  \end{tikzpicture}%
-  \par}
+  \AddToHookNext{shipout/background}{%
+    \put(0,0){%
+      \begin{tikzpicture}[overlay]%
+        \fill[cvnavy,rounded corners=\cvNavyRadius]
+          (\cvNavyX,-\cvNavyY)rectangle({\cvNavyX+\cvNavyW},{-\paperheight+\cvNavyBottom});
+        \ifnum\cv@page=\@ne\cv@drawheader\cv@drawphoto\fi
+        \ifvoid\cv@SBpart\else
+          \node[anchor=north west,inner sep=0pt,outer sep=0pt,text=cvsidetext]
+            at (\cvSbX,-\cv@sbtop) {\box\cv@SBpart};
+        \fi
+        \ifvoid\cv@RCpart\else
+          \node[anchor=north west,inner sep=0pt,outer sep=0pt,text=cvbody]
+            at (\cvRcX,-\cv@rctop) {\box\cv@RCpart};
+        \fi
+      \end{tikzpicture}%
+    }%
+  }%
+  \null}
 
 \newcommand\makecv{%
   \global\cv@page\@ne
