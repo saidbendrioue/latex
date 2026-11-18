@@ -1,17 +1,14 @@
 % !TEX program = xelatex
 % =============================================================================
 %  Said Bendrioue — Dossier de compétences
-%  Mise en page inspirée d'un dossier split navy / or + expériences 2 colonnes.
-%  Contenu repris de resume.tex ; lacunes comblées par des formulations
-%  recommandées dérivées du profil existant.
+%  Reverse-engineering du PDF ReportLab de référence (Carlito, navy/or, 5 pages).
 %
 %  Compilation :
 %      xelatex dossier.tex
-%  ou  latexmk -xelatex dossier.tex
 % =============================================================================
 \documentclass[a4paper,10pt]{article}
 
-\usepackage[a4paper,top=18mm,bottom=18mm,left=18mm,right=18mm]{geometry}
+\usepackage[a4paper,top=24.5mm,bottom=17mm,left=24.7mm,right=24.7mm]{geometry}
 \usepackage{fontspec}
 \usepackage[french]{babel}
 \frenchsetup{AutoSpacePunctuation=false,StandardLists=true}
@@ -19,200 +16,191 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{enumitem}
-\usepackage{tabularx}
-\usepackage{array}
 \usepackage{setspace}
 \usepackage[
   unicode,
   hidelinks,
   pdflang={fr},
-  pdftitle={Said Bendrioue — Dossier de compétences},
-  pdfauthor={Said Bendrioue}
+  pdftitle={Dossier de compétences - Said Bendrioue},
+  pdfauthor={Said Bendrioue},
+  pdfsubject={Développeur Fullstack Java/Angular · Scrum Master}
 ]{hyperref}
 
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0pt}
-\setlength{\emergencystretch}{1.5em}
 \raggedright
 \frenchspacing
 
-% ----- Couleurs (navy + or du modèle) ----------------------------------------
-\definecolor{dcnavy}{HTML}{0F2744}
-\definecolor{dcgold}{HTML}{B08B4F}
-\definecolor{dcbody}{HTML}{1A1A1A}
-\definecolor{dcmuted}{HTML}{4A4A4A}
+% ----- Couleurs (échantillonnées sur le PDF de référence) ---------------------
+\definecolor{dcnavy}{RGB}{11,33,73}
+\definecolor{dcgold}{RGB}{184,136,56}
+\definecolor{dcgoldsoft}{RGB}{208,176,120}
+\definecolor{dcbody}{RGB}{20,20,20}
+\definecolor{dcmuted}{RGB}{110,110,110}
+\definecolor{dclink}{RGB}{30,90,180}
 
-% ----- Police : Lato (sans-serif du dépôt), repli Source Sans 3 ---------------
+% ----- Police Carlito (identique au PDF ReportLab) ---------------------------
+\newcommand\cvFontDir{./fonts/carlito/}
 \defaultfontfeatures{Ligatures={TeXOff,NoCommon}}
-\IfFileExists{./fonts/Lato-Regular.ttf}{%
-  \setmainfont{Lato}[
-    Path = ./fonts/, Extension = .ttf,
-    UprightFont = *-Regular, BoldFont = *-Bold,
-    ItalicFont = *-Italic, BoldItalicFont = *-BoldItalic]
+\IfFileExists{\cvFontDir Carlito-Regular.ttf}{%
+  \setmainfont{Carlito}[
+    Path = \cvFontDir,
+    Extension = .ttf,
+    UprightFont = *-Regular,
+    BoldFont = *-Bold,
+    ItalicFont = *-Italic,
+    BoldItalicFont = *-BoldItalic]
 }{%
-  \setmainfont{SourceSans3}[
-    Extension = .otf,
-    UprightFont = *-Regular, BoldFont = *-Bold,
-    ItalicFont = *-It, BoldItalicFont = *-BoldIt]
+  \setmainfont{Carlito}
 }
+
+\color{dcbody}
 
 % ----- Listes ----------------------------------------------------------------
 \setlist[itemize]{
   label=\textbullet,
-  leftmargin=1.15em,
-  labelsep=0.45em,
-  itemsep=1.6pt,
-  topsep=2.5pt,
+  leftmargin=1.35em,
+  labelsep=0.55em,
+  itemsep=0.35pt,
+  topsep=1.6pt,
   parsep=0pt,
   partopsep=0pt
 }
 
-% ----- Helpers de section ----------------------------------------------------
+% ----- Helpers ---------------------------------------------------------------
 \newcommand{\dcsection}[1]{%
-  \par\vspace{3.2mm}%
-  {\fontsize{12.5}{14}\selectfont\bfseries\color{dcgold}\MakeUppercase{#1}}\par
-  \vspace{2.2mm}%
+  \par\vspace{0.2mm}%
+  {\fontsize{16}{19}\selectfont\bfseries\color{dcgold}\MakeUppercase{#1}}\par
+  \vspace{2.8mm}%
 }
 
-% Titre d'expérience avec filet or jusqu'à la marge droite
-\newcommand{\dcexphdr}[1]{%
-  \par\vspace{2mm}%
+\newcommand{\dcexphdr}{%
   \noindent
-  {\fontsize{12.5}{14}\selectfont\bfseries\color{dcgold}\MakeUppercase{#1}}%
-  \hspace{2.5mm}%
-  {\color{dcgold}\leaders\hrule height 0.55pt depth -0.15pt\hfill}\hbox{}%
-  \par\vspace{5mm}%
+  {\fontsize{16}{19}\selectfont\bfseries\color{dcgold}EXPÉRIENCES}%
+  \hspace{2.2mm}%
+  {\color{dcgold}\leaders\hrule height 0.55pt depth -0.1pt\hfill}\hbox{}%
+  \par\vspace{5.5mm}%
 }
 
 \newcommand{\dcsub}[1]{%
-  \par\vspace{2.8mm}%
+  \par\vspace{2.1mm}%
   \noindent\textbf{#1}\par
-  \vspace{0.6mm}%
-}
-
-\newcommand{\dclink}[1]{%
-  \par\vspace{2.2mm}%
-  \noindent\textit{Lien :} \textit{\href{#1}{#1}}\par
-}
-
-\newcommand{\dctech}[2]{%
-  \par\vspace{2.4mm}%
-  \noindent\textbf{Compétences techniques :}\par
-  \vspace{0.8mm}%
-  \noindent\textit{Langages et frameworks :} #1\par
   \vspace{0.4mm}%
-  \noindent\textit{Technologies et outils :} #2\par
 }
 
-\newcommand{\dctechline}[1]{%
-  \par\vspace{2.4mm}%
+\newcommand{\dctech}[1]{%
+  \par\vspace{2.0mm}%
   \noindent\textbf{Technologies :} #1\par
 }
 
-% Entrée expérience : colonne gauche (meta) + colonne droite (détail)
-\newlength{\dcleftw}
-\setlength{\dcleftw}{38mm}
-\newlength{\dcgap}
-\setlength{\dcgap}{7mm}
+\newlength{\dcleftw}\setlength{\dcleftw}{51.2mm}
+\newlength{\dcgap}\setlength{\dcgap}{2.8mm}
+
 \newcommand{\dcexperience}[2]{%
   \par\noindent
   \begin{minipage}[t]{\dcleftw}
-    \raggedright
-    #1
+    \raggedright #1
   \end{minipage}%
   \hspace{\dcgap}%
   \begin{minipage}[t]{\dimexpr\textwidth-\dcleftw-\dcgap\relax}
-    \raggedright
-    \color{dcbody}#2
+    \raggedright\color{dcbody}#2
   \end{minipage}%
   \par
 }
 
-\newcommand{\dcjob}[3]{%
-  {\fontsize{11}{13}\selectfont\bfseries\color{dcnavy}#1}\par
-  \vspace{0.6mm}%
-  {\fontsize{10.5}{12.5}\selectfont\bfseries\color{dcnavy}#2}\par
-  \vspace{0.8mm}%
-  {\fontsize{8.5}{10.5}\selectfont\itshape\color{dcmuted}(#3)}\par
+\newcommand{\dcjob}[4]{%
+  {\fontsize{11.2}{13.4}\selectfont\bfseries\color{dcnavy}#1}\par
+  \vspace{0.7mm}%
+  {\fontsize{10}{12}\selectfont\bfseries\color{dcnavy}#2}\par
+  \vspace{0.9mm}%
+  {\fontsize{8.2}{10}\selectfont\itshape\color{dcmuted}(#3)}\par
+  \vspace{0.35mm}%
+  {\fontsize{7.8}{9.5}\selectfont\itshape\color{dcgoldsoft}#4}\par
 }
 
 \newcommand{\dcrule}{%
-  \par\vspace{5mm}%
-  {\color{dcgold}\hrule height 0.55pt}\par
-  \vspace{5mm}%
+  \par\vspace{4.2mm}%
+  {\color{dcgold}\hrule height 0.5pt}\par
+  \vspace{4.2mm}%
+}
+
+\newcommand{\dcpageframe}{%
+  \noindent{\color{dcgold}\hrule height 0.5pt}\par
+  \vspace{4.5mm}%
 }
 
 \newcommand{\dcfooter}[1]{%
   \vfill
-  \noindent{\footnotesize\color{dcmuted}#1}%
+  \noindent{\color{dcgold}\hrule height 0.5pt}\par
+  \vspace{2.2mm}%
+  \noindent{\fontsize{9}{11}\selectfont\color{dcmuted}#1}%
 }
 
-% Timeline formations (années de fin, comme le modèle)
+\newcommand{\dcfooterplain}[1]{%
+  \vfill
+  \noindent{\fontsize{9}{11}\selectfont\color{dcmuted}#1}%
+}
+
+% Frise formations (ligne limitée aux deux nœuds, comme le PDF de référence)
 \newcommand{\dctimeline}{%
-  \vspace{2mm}%
+  \vspace{0.6mm}%
   \noindent
   \begin{tikzpicture}[x=\textwidth, y=1cm]
-    \draw[dcgold, line width=2.4pt] (0.06,0) -- (0.94,0);
-    % 2017 — Licence (année, diplôme, école sous le point)
-    \fill[dcnavy] (0.30,0) circle (3.6pt);
-    \node[anchor=north, align=center, font=\small\bfseries, text=dcbody]
-      at (0.30,-0.32) {2017};
-    \node[anchor=north, align=center, font=\footnotesize\bfseries, text=dcbody]
-      at (0.30,-0.85) {Licence Mathématiques\\et informatique};
-    \node[anchor=north, align=center, font=\footnotesize\itshape, text=dcbody]
-      at (0.30,-1.65) {Université Abdelmalek Essaâdi};
-    % 2019 — Master
-    \fill[dcnavy] (0.70,0) circle (3.6pt);
-    \node[anchor=north, align=center, font=\small\bfseries, text=dcbody]
-      at (0.70,-0.32) {2019};
-    \node[anchor=north, align=center, font=\footnotesize\bfseries, text=dcbody]
-      at (0.70,-0.85) {Master Informatique\\appliquée offshoring};
-    \node[anchor=north, align=center, font=\footnotesize\itshape, text=dcbody]
-      at (0.70,-1.65) {Université Mohammed V\\de Rabat};
+    \draw[dcgold, line width=1.45pt] (0.00,0) -- (0.52,0);
+    \fill[dcnavy] (0.04,0) circle (3.5pt);
+    \fill[dcnavy] (0.48,0) circle (3.5pt);
+
+    \node[anchor=north west, align=left, text width=0.36\textwidth, inner sep=0pt]
+      at (0.00,-0.32) {%
+        {\fontsize{8.3}{10}\selectfont\itshape 2013 -- 2017}\\[0.45mm]
+        {\fontsize{8.5}{10.2}\selectfont\bfseries Licence Mathématiques et Informatique Appliquées}\\[0.35mm]
+        {\fontsize{8.3}{10}\selectfont\itshape FPL Abdelmalek Essaâdi, Larache}\\[0.25mm]
+        {\fontsize{8.3}{10}\selectfont\itshape Major de promotion · Mention Bien}%
+      };
+
+    \node[anchor=north west, align=left, text width=0.42\textwidth, inner sep=0pt]
+      at (0.44,-0.32) {%
+        {\fontsize{8.3}{10}\selectfont\itshape 2017 -- 2019}\\[0.45mm]
+        {\fontsize{8.5}{10.2}\selectfont\bfseries Master Informatiques Appliquées Offshoring}\\[0.35mm]
+        {\fontsize{8.3}{10}\selectfont\itshape Université Mohamed V, Rabat}\\[0.25mm]
+        {\fontsize{8.3}{10}\selectfont\itshape Major de promotion · Mention Bien}%
+      };
   \end{tikzpicture}%
-  \vspace{28mm}%
+  \vspace{14.5mm}%
 }
 
 \begin{document}
-\color{dcbody}
 
 % =============================================================================
 % PAGE 1 — Couverture
 % =============================================================================
 \newgeometry{margin=0pt}
 \begin{tikzpicture}[remember picture, overlay]
-  % Split navy / blanc
+  % Split ~51.2 \% navy
   \fill[dcnavy] (current page.south west) rectangle
-    ([xshift=0.42\paperwidth]current page.north west);
-  % Titre collé au bord droit de la colonne navy, centré verticalement
-  \node[
-    anchor=east,
-    align=right,
-    font=\fontsize{20}{26}\selectfont\bfseries,
-    text=white,
-    inner sep=0pt
-  ] at ([xshift=0.395\paperwidth]current page.west)
-  {DOSSIER DE\\COMPÉTENCES};
+    ([xshift=0.5117\paperwidth]current page.north west);
 
-  % Bloc identité (colonne blanche), moitié basse comme le modèle
-  \node[
-    anchor=north west,
-    inner sep=0pt,
-    text width=0.44\paperwidth
-  ] at ([xshift=0.48\paperwidth, yshift=-0.42\paperheight]current page.north west) {
-    \includegraphics[width=44mm]{profile.jpg}\\[4.5mm]
-    {\fontsize{11}{13}\selectfont\bfseries\color{dcnavy}BENDRIOUE Said}\\[2.4mm]
-    {\fontsize{17}{20}\selectfont\bfseries\color{dcgold}Développeur Fullstack}\\[0.2mm]
-    {\fontsize{17}{20}\selectfont\bfseries\color{dcgold}Java/Angular}\\[1.4mm]
-    {\fontsize{12.5}{15}\selectfont\bfseries\color{dcgold}8 années d'expérience}\\[5.5mm]
-    {\fontsize{8.5}{11.2}\selectfont\color{dcnavy}%
-      \href{tel:+33749320616}{+33~7~49~32~06~16}\\
-      \href{mailto:bendrioue@gmail.com}{bendrioue@gmail.com}\\
-      \href{https://www.linkedin.com/in/said-bendrioue}{linkedin.com/in/said-bendrioue}\\
-      \href{https://saidbendrioue.github.io/portfolio}{saidbendrioue.github.io/portfolio}
-    }
-  };
+  % Titre (positions relatives au PDF de référence)
+  \node[anchor=north west, align=left, font=\fontsize{28}{34}\selectfont\bfseries, text=white, inner sep=0pt]
+    at ([xshift=38.1mm, yshift=-190.4mm]current page.north west) {DOSSIER DE};
+  \node[anchor=north west, align=left, font=\fontsize{28}{34}\selectfont\bfseries, text=white, inner sep=0pt]
+    at ([xshift=21.7mm, yshift=-207.3mm]current page.north west) {COMPÉTENCES};
+
+  % Photo + identité
+  \node[anchor=north west, inner sep=0pt, text width=90mm]
+    at ([xshift=112.1mm, yshift=-164.7mm]current page.north west) {%
+      \includegraphics[width=43.7mm]{dossier-photo.png}\\[3.8mm]
+      {\fontsize{11}{13}\selectfont\bfseries\color{dcnavy}BENDRIOUE Said}\\[1.6mm]
+      {\fontsize{18}{21}\selectfont\bfseries\color{dcgold}Développeur Fullstack}\\[0.15mm]
+      {\fontsize{16.5}{19.5}\selectfont\bfseries\color{dcgold}Java / Angular · Scrum Master}\\[0.35mm]
+      {\fontsize{18}{21}\selectfont\bfseries\color{dcgold}7 années d'expérience}\\[3.6mm]
+      {\fontsize{8}{10.2}\selectfont\color{dcnavy}%
+        07~49~32~06~16\\
+        \href{mailto:bendrioue@gmail.com}{\color{dclink}\underline{bendrioue@gmail.com}}\\
+        \href{https://www.linkedin.com/in/Said-Bendrioue}{\color{dclink}\underline{https://www.linkedin.com/in/Said-Bendrioue}}%
+      }%
+    };
 \end{tikzpicture}
 \clearpage
 \restoregeometry
@@ -220,315 +208,337 @@
 % =============================================================================
 % PAGE 2 — À propos / Formations / Compétences / Références
 % =============================================================================
+\fontsize{9}{11.2}\selectfont
+
 \dcsection{À propos}
 
-Fullstack Senior Java/Angular et Scrum Master (8~ans), systèmes critiques~:
-fiabilité, sécurité, conformité (vote électronique, données financières,
-bancaire). Cible~: CDI Nice~/ hybride.
+Je suis Said Bendrioue, développeur Fullstack Java/Angular avec 7 ans d'expérience.\\
+J'ai occupé des postes de développeur fullstack senior et de Scrum Master.\\
+J'ai travaillé dans des secteurs variés comme le vote électronique, la banque, la finance, les services postaux, la construction\ldots
 
-\vspace{2.5mm}
+\vspace{2.2mm}
 \noindent J'ai collaboré avec des entreprises comme~:
 \begin{itemize}
-  \item Docaposte
+  \item Docaposte / Voxaly
   \item La Poste Groupe
   \item Crédit Agricole Technologies et Services
   \item Bouygues Construction IT
 \end{itemize}
 
-\vspace{1.5mm}
+\vspace{1.6mm}
 \noindent Je suis en mesure de~:
 \begin{itemize}
-  \item Concevoir et développer des applications fullstack Java~/ Angular
-  \item Animer une équipe Agile en tant que Scrum Master
-  \item Migrer et moderniser des SI (Oracle~$\rightarrow$~PostgreSQL, legacy~$\rightarrow$~stack moderne)
-  \item Sécuriser APIs et données sensibles (JWT, RGPD, contextes critiques)
-  \item Industrialiser les livraisons (Docker, Kubernetes, CI/CD)
-  \item Garantir la qualité logicielle (JUnit, Mockito, SonarQube)
-  \item Intervenir sur des systèmes réglementés (vote, bancaire, social)
+  \item Concevoir des systèmes critiques à haute disponibilité, sécurisés et conformes (RGPD, CNIL)
+  \item Développer rapidement des fonctionnalités en Java / Spring Boot et Angular
+  \item Piloter des migrations de bases de données (Oracle vers PostgreSQL) et moderniser des applications legacy
+  \item Industrialiser les livraisons (CI/CD, Docker, Kubernetes)
+  \item Animer votre équipe Agile en tant que Scrum Master (Scrum, Kanban)
 \end{itemize}
 
+\vspace{3.2mm}
 \dcsection{Formations}
 \dctimeline
 
 \noindent
-\begin{minipage}[t]{0.62\textwidth}
+\begin{minipage}[t]{0.575\textwidth}
 \dcsection{Compétences}
-\vspace{-1mm}
-\noindent\textbf{Langages :} Java~17, TypeScript, SQL\\[1.2mm]
-\noindent\textbf{Frameworks \& bibliothèques :} Spring Boot, Spring Security, Hibernate,
-Angular, RxJS, NgRx\\[1.2mm]
-\noindent\textbf{Architectures \& concepts :} API REST, Microservices, JWT, Kafka\\[1.2mm]
-\noindent\textbf{Data :} PostgreSQL, Oracle, Liquibase, Ora2Pg\\[1.2mm]
-\noindent\textbf{Outils \& environnements :} Docker, Kubernetes, GitLab CI, Jenkins, Git, Maven,
-SonarQube\\[1.2mm]
-\noindent\textbf{Méthodologies \& gestion d'équipe :} Scrum Master, Jira, TDD
+\vspace{-1.5mm}
+{\fontsize{8.4}{10.5}\selectfont
+\noindent\textbf{Langages :} Java 17, TypeScript, HTML, SCSS\\[0.4mm]
+\noindent\textbf{Frameworks \& bibliothèques :} Spring Boot, Spring Security / JWT,\\
+Hibernate, JDBC, JSF, Angular, RxJS, NgRx, Webpack, Bootstrap, JUnit 5,\\
+Mockito, Flutter, Firebase\\[0.4mm]
+\noindent\textbf{Architectures \& concepts :} Microservices, API REST, CQRS, Event\\
+Sourcing, programmation réactive, GED\\[0.4mm]
+\noindent\textbf{Outils \& environnements :} Docker, Kubernetes, Jenkins, GitLab CI/CD,\\
+Git, Maven, SonarQube, Grafana, Kibana, Kafka, ActiveMQ, Elasticsearch,\\
+PostgreSQL, Oracle, Microsoft SQL Server, Couchbase, Robot Framework,\\
+Jira, Confluence, Trello\\[0.4mm]
+\noindent\textbf{Sécurité \& conformité :} Chiffrement TLS, journalisation d'audit, normes\\
+CNIL (vote électronique), RGPD\\[0.4mm]
+\noindent\textbf{Méthodologies \& gestion d'équipe :} Agile, Scrum (Scrum Master),\\
+Kanban, CI/CD, animation des cérémonies, gestion du backlog, mentorat,\\
+gestion de crise\par}
 \end{minipage}%
 \hfill
-\begin{minipage}[t]{0.32\textwidth}
+\begin{minipage}[t]{0.38\textwidth}
 \dcsection{Autres}
-\vspace{-1mm}
-\noindent Anglais : professionnel\\[1.2mm]
-\noindent Français : courant\\[1.2mm]
-\noindent Arabe : bilingue\\[1.2mm]
-\noindent Nice~/ hybride
+\vspace{-1.5mm}
+{\fontsize{8.4}{10.5}\selectfont
+\noindent Français : C2 (courant)\\[0.4mm]
+\noindent Anglais : B2 (professionnel)\\[0.4mm]
+\noindent Arabe : langue maternelle\\[1.3mm]
+\noindent\textbf{Centres d'intérêt :} musique / guitare, chasse\\
+sous-marine / pêche, football, voyages, lecture de\\
+mangas\par}
 \end{minipage}
 
-\vspace{2mm}
+\vspace{4.2mm}
 \dcsection{Références}
-{\small\itshape\color{dcgold}Informations des contacts disponibles sur demande.}
+{\fontsize{8.4}{10}\selectfont\itshape Informations des contacts disponibles sur demande.}
 
-\dcfooter{2}
+\dcfooterplain{2}
 \clearpage
 
 % =============================================================================
-% PAGE 3 — Expériences (Docaposte / e-Vote)
+% PAGE 3 — Expériences (Voxaly + Bilans)
 % =============================================================================
-\dcexphdr{Expériences}
+\fontsize{9}{11.2}\selectfont
+\dcexphdr
 
 \dcexperience{%
-  \dcjob{Fullstack Java/Angular\\Scrum Master}{Docaposte — e-Vote (Voxaly)}{12/2025 – 08/2026}
+  \dcjob{Développeur Fullstack\\Java/Angular · Scrum\\Master}%
+        {Docaposte / Voxaly}%
+        {08/2023 - aujourd'hui}%
+        {Nice, France}
 }{%
-  Plateforme de vote électronique pour organisations (échelle~: $\sim$165~000 électeurs,
-  2~000+ orgs). Mission fullstack et animation Scrum sur le cycle de vie des candidatures
-  et le contrôle des pièces électorales.
+  Voxaly (Docaposte) est une solution cloud de confiance numérique pour les scrutins de
+  la fonction publique : élections professionnelles des ministères et du secteur public.
 
-  \dcsub{Chiffres clé :}
+  \dcsub{Chiffres clés :}
   \begin{itemize}
-    \item $\sim$165~000 électeurs et 2~000+ organisations
-    \item Vélocité d'équipe \textbf{+15~\%} via animation Scrum / Jira
-  \end{itemize}
-
-  \dcsub{Composition d'équipe :}
-  \begin{itemize}
-    \item Équipe produit Agile (PO, développeurs, QA) — animation Scrum Master
+    \item 165~M+ électeurs
+    \item 2~000+ organisations clientes
   \end{itemize}
 
   \dcsub{Mes responsabilités :}
   \begin{itemize}
-    \item Cycle de vie des candidatures (création $\rightarrow$ validation/rejet) avec
-          traçabilité des statuts et dates
-    \item Règles et contrôles des pièces électorales (DIC, profession de foi, logo, signature)
-    \item Exports CSV/PDF/ZIP sync et async pour le suivi opérationnel
-    \item Habilitations par profil (OS, valideur, admin), robustesse backend et notifications e-mail
-    \item Animation Scrum et pilotage Jira
+    \item Architecture des modules critiques du cycle électoral (émargement sécurisé, urne
+          chiffrée, dépouillement)
+    \item Garantie de la conformité CNIL / RGPD
+    \item Renforcement de la résilience de la plateforme face aux attaques DDoS et aux pics de
+          charge lors des dépouillements synchrones
+    \item Pilotage Scrum : animation quotidienne de l'équipe Agile
+  \end{itemize}
+
+  \dcsub{Résultats obtenus :}
+  \begin{itemize}
+    \item Architecture conçue avec zéro tolérance aux pannes
+    \item Protocoles de sécurité validés lors d'expertises indépendantes de niveau ministériel
+    \item Vélocité de livraison améliorée de 15~\% via des indicateurs Jira
   \end{itemize}
 
   \dcsub{Compétences démontrées :}
   \begin{itemize}
-    \item Maîtrise fullstack sur un SI critique réglementé
-    \item Capacité à faire progresser la vélocité d'une équipe Agile
-    \item Rigueur sur traçabilité, habilitations et fiabilité métier
+    \item Conception de systèmes critiques à haute disponibilité et forte sécurité
+    \item Conformité réglementaire (CNIL, RGPD)
+    \item Animation d'une équipe Agile en tant que Scrum Master
   \end{itemize}
 
-  \dclink{https://saidbendrioue.github.io/portfolio}
-  \dctech{Java, Spring Boot, Angular, TypeScript, RxJS, NgRx}%
-         {API REST, JWT, GitLab CI, Jira, Git}
+  \dctech{Java 17, Spring Boot, Angular, API REST, PostgreSQL, Docker, chiffrement TLS, GitLab CI/CD.}
+}
+
+\dcrule
+
+\dcexperience{%
+  \dcjob{Développeur Fullstack\\Java/Angular}%
+        {Docaposte / Bilans Service}%
+        {08/2023 - aujourd'hui}%
+        {Nice, France}
+}{%
+  Bilans Service, filiale de Docaposte, propose une solution d'industrialisation et d'analyse
+  de comptes d'entreprises pour les établissements de crédit et les sociétés de financement.
+
+  \dcsub{Mes responsabilités :}
+  \begin{itemize}
+    \item Migration de la base legacy Oracle vers PostgreSQL conteneurisée sous Docker
+    \item Modernisation du portail Vega NextGen (legacy vers une UI Angular réactive)
+    \item Industrialisation des pipelines CI/CD (Jenkins, GitLab CI)
+  \end{itemize}
+
+  \dcsub{Résultats obtenus :}
+  \begin{itemize}
+    \item Modernisation du socle de données
+    \item Diminution du temps de traitement utilisateur (-30~\%)
+    \item Accélération des déploiements en production
+  \end{itemize}
+
+  \dcsub{Compétences démontrées :}
+  \begin{itemize}
+    \item Migration de bases de données à forte volumétrie
+    \item Modernisation d'applications legacy vers Angular
+    \item Mise en place de pipelines CI/CD
+  \end{itemize}
+
+  \dctech{Java, Angular, JSF, API REST, ActiveMQ, Oracle, PostgreSQL, Docker, Jenkins.}
 }
 
 \dcfooter{3}
 \clearpage
 
 % =============================================================================
-% PAGE 4 — EAS + Bilans
+% PAGE 4 — EAS + Timbre électronique
 % =============================================================================
+\fontsize{9}{11.2}\selectfont
+\dcpageframe
+
 \dcexperience{%
-  \dcjob{Fullstack Java/Angular\\Scrum Master}{Docaposte — EAS (La Poste)}{08/2024 – 05/2025}
+  \dcjob{Scrum Master ·\\Développeur Fullstack\\Java/Angular}%
+        {Docaposte / EAS}%
+        {08/2023 - aujourd'hui}%
+        {Nice, France}
 }{%
-  Portail B2E de prestations sociales pour La Poste~: dépôt, instruction et validation
-  des dossiers, avec persistance IBAN / identifiants RH et contrôles RGPD.
-
-  \dcsub{Chiffres clé :}
-  \begin{itemize}
-    \item Portail national B2E prestations sociales La Poste
-    \item Sprints de 2~semaines, backlog co-construit avec le PO
-  \end{itemize}
-
-  \dcsub{Composition d'équipe :}
-  \begin{itemize}
-    \item Équipe Agile (PO, développeurs, QA) — rôle Scrum Master
-  \end{itemize}
+  EAS (Espace Activités Sociales) est le portail B2E sécurisé de gestion des prestations
+  sociales de La Poste (Chèque-Vacances, CESU, Chèque Culture), avec une architecture
+  Front-Office / Back-Office et un workflow de validation.
 
   \dcsub{Mes responsabilités :}
   \begin{itemize}
-    \item API REST Spring Boot / JWT (dépôt $\rightarrow$ instruction $\rightarrow$ validation)
-    \item SPA Angular (RxJS, NgRx) pour agents et gestionnaires
-    \item GED et contrôles RGPD (chiffrement, consentements, droit à l'effacement)
-    \item Facilitation Scrum~; déploiement Docker / CI-CD sur hébergement souverain
+    \item Scrum Master : sprints de 2 semaines pour une équipe pluridisciplinaire, gestion du
+          backlog avec le PO, facilitation des cérémonies et levée des blocages
+    \item Backend : API RESTful Spring Boot et Spring Security / JWT orchestrant le workflow
+          métier (dépôt, instruction, validation) et la persistance de données sensibles (IBAN,
+          identifiants RH)
+    \item Frontend : SPA Angular (RxJS, NgRx) pour le dépôt de demandes, le suivi temps réel
+          et la messagerie intégrée des agents, et back-office des gestionnaires
+    \item Conformité RGPD : module de GED (upload, indexation, archivage sécurisés),
+          chiffrement, consentements et droit à l'effacement
   \end{itemize}
 
   \dcsub{Compétences démontrées :}
   \begin{itemize}
-    \item Expertise fullstack sur données RH / sociales sensibles
-    \item Animation Agile de bout en bout (backlog, cérémonies, livraison)
-    \item Intégration conformité RGPD dans le cycle de développement
+    \item Facilitation Scrum et gestion de backlog
+    \item Développement fullstack sécurisé (Spring Security / JWT, Angular)
+    \item Conformité RGPD sur des données sensibles
   \end{itemize}
 
-  \dctech{Java, Spring Boot, Angular, TypeScript, RxJS, NgRx}%
-         {JWT, Docker, CI/CD, cloud souverain, Git}
+  \dctech{Java 17, Spring Boot, Angular, API REST, PostgreSQL, Docker, RGPD, GED.}
 }
 
 \dcrule
 
 \dcexperience{%
-  \dcjob{Backend / Data}{Docaposte — Bilans Service}{05/2025 – 11/2025}
+  \dcjob{Développeur Backend\\Java}%
+        {La Poste Groupe}%
+        {01/2023 - 07/2023}%
+        {Montpellier, France}
 }{%
-  Migration Oracle~$\rightarrow$~PostgreSQL du service Bilans~: objets SQL, conteneurisation
-  et industrialisation CI/CD, avec accompagnement recette / MEP.
+  Développement de la plateforme nationale de prise de commande et de génération de
+  timbres électroniques (Timbre électronique).
 
-  \dcsub{Chiffres clé :}
-  \begin{itemize}
-    \item Migration complète Oracle~$\rightarrow$~PostgreSQL (Ora2Pg)
-    \item Base PostgreSQL conteneurisée et pipeline CI/CD
-  \end{itemize}
+  \vspace{1.2mm}
+  J'y ai rejoint une équipe Agile/Scrum de 7 personnes.
 
   \dcsub{Mes responsabilités :}
   \begin{itemize}
-    \item Migration des objets SQL via Ora2Pg
-    \item Conteneurisation PostgreSQL sous Docker
-    \item Industrialisation CI/CD et accompagnement recette / MEP
+    \item Développement et évolution des microservices Spring Boot dédiés à la prise de
+          commande, à la génération et à la gestion des timbres
+    \item Implémentation d'API REST et d'échanges asynchrones avec Apache Kafka
+    \item Automatisation des tests fonctionnels (Robot Framework) et développement des
+          tests unitaires et d'intégration (JUnit, Mockito)
+    \item Revues de code, déploiements CI/CD et cérémonies Agile, avec les équipes métier,
+          QA et DevOps
+  \end{itemize}
+
+  \dcsub{Résultats obtenus :}
+  \begin{itemize}
+    \item Fiabilité et traçabilité des traitements garanties
+    \item Livraisons sécurisées par des tests automatisés
   \end{itemize}
 
   \dcsub{Compétences démontrées :}
   \begin{itemize}
-    \item Capacité à migrer un SI data critique sans rupture
-    \item Industrialisation et accompagnement métier jusqu'à la MEP
+    \item Conception et développement de microservices
+    \item Échanges asynchrones avec Kafka
+    \item Automatisation et industrialisation des tests
   \end{itemize}
 
-  \dctechline{Oracle, PostgreSQL, Ora2Pg, SQL, Docker, CI/CD, Git}
+  \dctech{Java 17, Spring Boot, Kafka, API REST, PostgreSQL, Robot Framework, Docker, Kubernetes, Git, Jenkins.}
 }
 
 \dcfooter{4}
 \clearpage
 
 % =============================================================================
-% PAGE 5 — MFS + Timbre électronique
+% PAGE 5 — Crédit Agricole + Bouygues + Stage
 % =============================================================================
-\dcexperience{%
-  \dcjob{Fullstack\\Scrum Master}{Docaposte — Maison France Services}{08/2023 – 07/2024}
-}{%
-  Plateforme nationale pour les conseillers France Services~: APIs Spring Boot,
-  formulaires dynamiques Angular, déploiement cloud souverain et facilitation Scrum.
+\fontsize{9}{11.2}\selectfont
+\dcpageframe
 
-  \dcsub{Chiffres clé :}
-  \begin{itemize}
-    \item Plateforme pour $\sim$8~000 conseillers France Services
-    \item Mission au sein de Docaposte (août~2023 – août~2026)
-  \end{itemize}
+\dcexperience{%
+  \dcjob{Développeur Fullstack\\Java/Angular}%
+        {Crédit Agricole Technologies\\et Services}%
+        {05/2022 - 12/2022}%
+        {Montpellier, France}
+}{%
+  Squad « Clients, Offres, Liens » : refonte du parcours omnicanal de changement
+  d'adresse client à l'échelle nationale.
+
+  \vspace{1.2mm}
+  J'y ai rejoint une équipe Agile/Scrum de 8 personnes.
 
   \dcsub{Mes responsabilités :}
   \begin{itemize}
-    \item Développement d'APIs Spring Boot et formulaires dynamiques Angular
-    \item Déploiement sur cloud souverain
-    \item Facilitation Scrum de l'équipe
+    \item Développement et sécurisation du parcours utilisateur de mise à jour des données
+    \item Propagation synchrone / asynchrone des données vers le SI bancaire central
+    \item Intégration et validation : règles métier strictes de validation postale et traçabilité
+          d'audit réglementaire
+  \end{itemize}
+
+  \dcsub{Résultats obtenus :}
+  \begin{itemize}
+    \item Couverture de tests unitaires de 90~\% (JUnit, Mockito)
+    \item Conformité du code garantie via SonarQube
   \end{itemize}
 
   \dcsub{Compétences démontrées :}
   \begin{itemize}
-    \item Livraison fullstack à grande échelle (milliers d'utilisateurs)
-    \item Double casquette technique / Scrum Master
+    \item Développement fullstack dans un contexte bancaire
+    \item Qualité logicielle et tests automatisés
+    \item Intégration avec le système d'information central
   \end{itemize}
 
-  \dctech{Java, Spring Boot, Angular}%
-         {Cloud souverain, Scrum, Jira, Git}
+  \dctech{Java, Spring Boot, Angular, Maven, Oracle, API REST, Git, Jenkins, SonarQube, JUnit, Jira.}
 }
 
 \dcrule
 
 \dcexperience{%
-  \dcjob{Backend Java}{La Poste Groupe — Timbre électronique}{01/2023 – 08/2023}
+  \dcjob{Développeur Fullstack\\Java/Angular}%
+        {Bouygues Construction IT}%
+        {07/2019 - 04/2022}%
+        {Casablanca, Maroc}
 }{%
-  Microservices Spring Boot pour la commande, la génération et la vérification
-  temps réel des identifiants de timbres électroniques, avec traçabilité vers le SI
-  logistique.
-
-  \dcsub{Chiffres clé :}
-  \begin{itemize}
-    \item Vérification temps réel des identifiants de timbres
-    \item Intégration SI logistique via API REST et Kafka
-  \end{itemize}
+  Projet e-Doc : application de Gestion Électronique des Documents (GED) pour le
+  pilotage mondial des chantiers.
 
   \dcsub{Mes responsabilités :}
   \begin{itemize}
-    \item Développement microservices Spring Boot (commande, génération, vérification)
-    \item API REST et Kafka pour fiabilité / traçabilité
-    \item Contrôles anti-fraude et règles tarifaires
-    \item Tests JUnit / Robot Framework~; contribution CI/CD avec métier, QA et DevOps
+    \item Pilotage de la modernisation : migration progressive du socle obsolète Java 6 / GWT
+          vers une architecture web moderne Java 11 / Angular
+    \item Développement des modules clés : gestion des plans d'ingénierie (versioning,
+          indices) et workflows d'approbation de visas MOE / MOA / sous-traitants
+  \end{itemize}
+
+  \dcsub{Résultats obtenus :}
+  \begin{itemize}
+    \item Application unifiée livrée à de nombreux chantiers
+    \item Vélocité de transmission des plans accrue
+    \item Pertes de versions réduites
   \end{itemize}
 
   \dcsub{Compétences démontrées :}
   \begin{itemize}
-    \item Conception de microservices fiables en environnement logistique
-    \item Collaboration transverse métier / QA / DevOps
+    \item Modernisation d'une application legacy
+    \item Gestion électronique de documents (écosystème Documentum)
+    \item Conception de workflows d'approbation
   \end{itemize}
 
-  \dctechline{Java, Spring Boot, Microservices, Kafka, API REST, JUnit, Robot Framework, CI/CD, Git}
+  \dctech{Java 11, Spring Boot, Angular, SQL Server, Documentum (migration depuis Java 6 / GWT).}
+}
+
+\dcrule
+
+\dcexperience{%
+  \dcjob{Stagiaire · Projet de fin\\d'études}%
+        {Bouygues Maroc}%
+        {02/2019 - 07/2019}%
+        {Casablanca, Maroc}
+}{%
+  Conception d'une solution de gestion de chantier terrain (formulaires qualité,
+  annotations sur plans, mode hors-ligne), sur le modèle de l'application FinalCAD.
 }
 
 \dcfooter{5}
-\clearpage
-
-% =============================================================================
-% PAGE 6 — Crédit Agricole + Bouygues
-% =============================================================================
-\dcexperience{%
-  \dcjob{Fullstack Java/Angular}{Crédit Agricole Technologies et Services}{05/2022 – 12/2022}
-}{%
-  Parcours national de changement d'adresse~: propagation sync/async vers le SI bancaire,
-  validation postale et piste d'audit réglementaire.
-
-  \dcsub{Chiffres clé :}
-  \begin{itemize}
-    \item Parcours omnicanal national (réseau bancaire)
-    \item Qualité renforcée via gates SonarQube
-  \end{itemize}
-
-  \dcsub{Mes responsabilités :}
-  \begin{itemize}
-    \item Développement fullstack du parcours de changement d'adresse
-    \item Propagation sync/async vers le SI bancaire
-    \item Validation postale et piste d'audit réglementaire
-    \item Tests JUnit / Mockito et gates SonarQube
-  \end{itemize}
-
-  \dcsub{Compétences démontrées :}
-  \begin{itemize}
-    \item Maîtrise des contraintes bancaires et d'audit
-    \item Qualité logicielle et industrialisation des contrôles
-  \end{itemize}
-
-  \dctechline{Java, Angular, JUnit, Mockito, SonarQube, Git}
-}
-
-\dcrule
-
-\dcexperience{%
-  \dcjob{Fullstack Java/Angular}{Bouygues Construction IT — e-Doc (GED)}{07/2019 – 04/2022}
-}{%
-  Migration progressive d'une GED chantier Java~6/GWT vers Java~11/Angular~:
-  modules plans (versioning), workflows de visas et application unifiée pour les chantiers.
-
-  \dcsub{Chiffres clé :}
-  \begin{itemize}
-    \item Migration multi-années Java~6/GWT $\rightarrow$ Java~11/Angular
-    \item Application unifiée déployée sur les chantiers
-  \end{itemize}
-
-  \dcsub{Mes responsabilités :}
-  \begin{itemize}
-    \item Migration progressive du socle technique
-    \item Modules plans (versioning) et workflows de visas
-    \item Unification de l'application GED pour les chantiers
-  \end{itemize}
-
-  \dcsub{Compétences démontrées :}
-  \begin{itemize}
-    \item Conduite de modernisation applicative sur le long terme
-    \item Expertise fullstack Java / Angular en contexte métier BTP
-  \end{itemize}
-
-  \dctechline{Java~11, Angular, GWT (legacy), Git}
-}
-
-\dcfooter{6}
 
 \end{document}

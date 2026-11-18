@@ -4,7 +4,9 @@ Sources du CV :
 
 - `resume.tex` — version mise en page (colonne marine)
 - `resume-ats.tex` — version une colonne pour les formulaires en ligne
-- `dossier.tex` — dossier de compétences (couverture navy/or, frise formations, expériences 2 colonnes)
+- `dossier.tex` — dossier de compétences (reverse-engineering du PDF de référence ReportLab)
+- `dossier-photo.png` — photo de couverture du dossier
+- `fonts/carlito/` — Carlito (police du dossier)
 
 ## Compilation locale
 
